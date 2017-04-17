@@ -12,14 +12,20 @@ import android.view.ViewGroup;
 
 import com.hannesdorfmann.mosby.mvp.MvpFragment;
 
+import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Sinjvf on 17.04.2017.
  */
 
 public abstract class SuperPageFragment<V extends SuperPageView, P extends SuperPagePresenter<V>> extends MvpFragment<V, P> implements SuperPageView {
+
+    protected final String TAG = "My_Tag:"+getClass().getSimpleName();
     protected Unbinder unbinder;
+    protected CompositeSubscription subs = new CompositeSubscription();
+
 
     @Override
     public Drawable getPict(Resources res) {
@@ -42,7 +48,7 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
         super.onCreateView(inflater, container, savedInstanceState);
 
         View rootView = inflater.inflate(getLayoutId(), container, false);
-        //   unbinder = ButterKnife.bind(this, rootView);
+        unbinder = ButterKnife.bind(this, rootView);
         return rootView;
     }
 
@@ -51,10 +57,13 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
         super.onDestroyView();
         if (unbinder != null)
             unbinder.unbind();
+        if (subs != null)
+            subs.unsubscribe();
     }
 
 
     protected abstract int getIconId();
     protected abstract int getTitleId();
     protected abstract int getLayoutId();
+    public abstract void init();
 }

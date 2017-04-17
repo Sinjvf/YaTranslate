@@ -10,6 +10,7 @@ import ru.sinjvf.testtranslate.main.pages.SuperPageFragment;
 
 /**
  * Created by Sinjvf on 17.04.2017.
+ * Adapter for tabs\pages selection
  */
 
 public class MainTabAdapter extends FragmentPagerAdapter {

@@ -23,6 +23,11 @@ import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.main.pages.SuperPageFragment;
 import rx.subscriptions.CompositeSubscription;
 
+/**
+ * Created by Sinjvf on 17.04.2017.
+ * Main activity - contains viewPager with tabs
+ */
+
 public class MainActivity extends MvpActivity<MainView, MainPresenter> implements MainView {
 
     private final String TAG = "My_Tag:"+getClass().getSimpleName();

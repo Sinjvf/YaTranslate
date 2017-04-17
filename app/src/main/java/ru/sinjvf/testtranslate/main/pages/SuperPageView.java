@@ -12,4 +12,6 @@ import com.hannesdorfmann.mosby.mvp.MvpView;
 public interface SuperPageView extends MvpView {
     String getTitle(Resources res);
     Drawable getPict(Resources res);
+    void init();
+    Resources getResources();
 }

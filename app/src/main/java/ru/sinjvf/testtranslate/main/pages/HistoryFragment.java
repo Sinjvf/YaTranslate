@@ -1,14 +1,27 @@
 package ru.sinjvf.testtranslate.main.pages;
 
+import android.support.v7.widget.RecyclerView;
+
+import butterknife.BindView;
 import ru.sinjvf.testtranslate.R;
 
 
 /**
  * Created by Sinjvf on 17.04.2017.
+ * Fragment with translations history
  */
 
 public class HistoryFragment extends SuperPageFragment<HistoryView, HistoryPresenter> implements HistoryView {
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
+    private FavoritesAdapter adapter;
 
+    @Override
+    public void init() {
+        adapter = new FavoritesAdapter();
+        adapter.setList(presenter.getList());
+        recyclerView.setAdapter(adapter);
+    }
     @Override
     protected int getIconId(){
         return R.drawable.ic_history;

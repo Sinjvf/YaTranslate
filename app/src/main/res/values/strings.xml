@@ -4,4 +4,8 @@
     <string name="title_history">История</string>
     <string name="title_favorites">Избранное</string>
 
+
+    <string name="def_from_lang">Русский</string>
+    <string name="def_to_lang">Английский</string>
+
 </resources>
