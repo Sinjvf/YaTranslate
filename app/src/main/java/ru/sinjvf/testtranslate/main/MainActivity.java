@@ -64,9 +64,9 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
     @Override
     public void initialization() {
-        compositeSubscription.add(RxViewPager.pageSelections(viewPager).subscribe(position -> {
-            presenter.setTitle(position);
-        }));
+        compositeSubscription.add(RxViewPager.pageSelections(viewPager)
+                .skip(1)
+                .subscribe(position -> presenter.setTitle(position)));
 
     }
 

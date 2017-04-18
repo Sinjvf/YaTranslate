@@ -14,6 +14,7 @@ import com.hannesdorfmann.mosby.mvp.MvpFragment;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.sinjvf.testtranslate.main.TranslateApplication;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -61,6 +62,11 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
             subs.unsubscribe();
     }
 
+
+    @Override
+    public TranslateApplication getApp() {
+        return (TranslateApplication) getActivity().getApplication();
+    }
 
     protected abstract int getIconId();
     protected abstract int getTitleId();

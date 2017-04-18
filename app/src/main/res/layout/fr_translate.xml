@@ -18,7 +18,7 @@
         android:gravity="center"
         android:id="@+id/select_language">
         <Spinner
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/lang_width"
             android:layout_height="wrap_content"
             android:id="@+id/from_language">
         </Spinner>
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_double_arrow"/>
         <Spinner
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/lang_width"
             android:layout_height="wrap_content"
             android:id="@+id/to_language">
         </Spinner>
@@ -49,6 +49,13 @@
             app:srcCompat="@drawable/ic_close"
             android:tint="@color/greyDivider"
             android:id="@+id/clear_text" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lang"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
         <EditText
             android:layout_above="@id/clear_text"
             android:layout_width="match_parent"

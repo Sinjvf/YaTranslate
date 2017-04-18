@@ -10,14 +10,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.POST;
 import retrofit2.http.QueryMap;
 import ru.sinjvf.testtranslate.retrofit.responses.GetLangsResponse;
 import ru.sinjvf.testtranslate.retrofit.responses.TranslateResponse;
-import rx.Observable;
 
 /**
  * Created by Sinjvf on 17.04.2017.
@@ -40,10 +39,10 @@ public class ServerContract {
 
     public interface ProfileAPI {
         @POST(TRANSLATE)
-        Observable<TranslateResponse> translate(@QueryMap Map<String, String> params);
+        Call<TranslateResponse> translate(@QueryMap Map<String, String> params);
 
         @POST(GET_LANGS)
-        Observable<GetLangsResponse> getlangs(@QueryMap Map<String, String> params);
+        Call<GetLangsResponse> getlangs(@QueryMap Map<String, String> params);
     }
 
     private static class ServiceGenerator {
@@ -52,7 +51,6 @@ public class ServerContract {
 
         private static Retrofit.Builder builder =
                 new Retrofit.Builder()
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                         .addConverterFactory(GsonConverterFactory.create(new Gson()))
                         .baseUrl(ServerContract.BASE_URL);
 

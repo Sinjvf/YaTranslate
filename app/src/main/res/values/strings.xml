@@ -7,5 +7,7 @@
 
     <string name="def_from_lang">Русский</string>
     <string name="def_to_lang">Английский</string>
+    <string name="licence">Переведено сервисом «Яндекс.Переводчик»</string>
+
 
 </resources>

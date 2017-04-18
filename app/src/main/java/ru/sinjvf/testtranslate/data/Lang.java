@@ -1,110 +1,115 @@
 package ru.sinjvf.testtranslate.data;
 
-import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.JoinEntity;
 import org.greenrobot.greendao.annotation.ToMany;
 
 import java.util.List;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.DaoException;
 
 /**
- * Created by Sinjvf on 17.04.2017.
- * DB Class for saving single translation.
- * Use greenDao ORM
+ * Created by Sinjvf on 18.04.2017.
  */
 
 @Entity
-public class SingleTranslation {
-
+public class Lang {
     @Id(autoincrement = true)
-    private Long id;
-    private String lang;
-    private String text;
-    private boolean isFavorite;
+    Long id;
+    String desc;
+    String name;
 
-    @ToMany(referencedJoinProperty = "translateId")
-    private List<TranslationText> translationList;
+
+    @ToMany
+    @JoinEntity(
+            entity = JoinLangs.class,
+            sourceProperty = "fromId",
+            targetProperty = "toId"
+    )
+
+
+    private List<Lang> langList;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
     /** Used for active entity operations. */
-    @Generated(hash = 1264460250)
-    private transient SingleTranslationDao myDao;
+    @Generated(hash = 1129664307)
+    private transient LangDao myDao;
 
-    @Generated(hash = 2100668811)
-    public SingleTranslation(Long id, String lang, String text,
-            boolean isFavorite) {
+
+    @Generated(hash = 449125019)
+    public Lang(Long id, String desc, String name) {
         this.id = id;
-        this.lang = lang;
-        this.text = text;
-        this.isFavorite = isFavorite;
+        this.desc = desc;
+        this.name = name;
     }
 
-    @Generated(hash = 377811225)
-    public SingleTranslation() {
+
+    @Generated(hash = 1197397665)
+    public Lang() {
     }
+
 
     public Long getId() {
         return this.id;
     }
 
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getLang() {
-        return this.lang;
+
+    public String getDesc() {
+        return this.desc;
     }
 
-    public void setLang(String lang) {
-        this.lang = lang;
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
-    public String getText() {
-        return this.text;
+
+    public String getName() {
+        return this.name;
     }
 
-    public void setText(String text) {
-        this.text = text;
+
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public boolean getIsFavorite() {
-        return this.isFavorite;
-    }
-
-    public void setIsFavorite(boolean isFavorite) {
-        this.isFavorite = isFavorite;
-    }
 
     /**
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Generated(hash = 82780351)
-    public List<TranslationText> getTranslationList() {
-        if (translationList == null) {
+    @Generated(hash = 1969520296)
+    public List<Lang> getLangList() {
+        if (langList == null) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
-            TranslationTextDao targetDao = daoSession.getTranslationTextDao();
-            List<TranslationText> translationListNew = targetDao
-                    ._querySingleTranslation_TranslationList(id);
+            LangDao targetDao = daoSession.getLangDao();
+            List<Lang> langListNew = targetDao._queryLang_LangList(id);
             synchronized (this) {
-                if (translationList == null) {
-                    translationList = translationListNew;
+                if (langList == null) {
+                    langList = langListNew;
                 }
             }
         }
-        return translationList;
+        return langList;
     }
 
+
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    @Generated(hash = 1937075857)
-    public synchronized void resetTranslationList() {
-        translationList = null;
+    @Generated(hash = 547291162)
+    public synchronized void resetLangList() {
+        langList = null;
     }
+
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
@@ -118,6 +123,7 @@ public class SingleTranslation {
         myDao.delete(this);
     }
 
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -129,6 +135,7 @@ public class SingleTranslation {
         }
         myDao.refresh(this);
     }
+
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
@@ -142,12 +149,12 @@ public class SingleTranslation {
         myDao.update(this);
     }
 
+
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1889450203)
+    @Generated(hash = 905440969)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getSingleTranslationDao() : null;
+        myDao = daoSession != null ? daoSession.getLangDao() : null;
     }
 
 }
-

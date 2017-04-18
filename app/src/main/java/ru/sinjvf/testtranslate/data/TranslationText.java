@@ -10,7 +10,7 @@ import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
 public class TranslationText {
-    @Id
+    @Id(autoincrement = true)
     private Long id;
     private Long translateId;
     private String text;
@@ -41,5 +41,5 @@ public class TranslationText {
     public void setText(String text) {
         this.text = text;
     }
-
+  
 }

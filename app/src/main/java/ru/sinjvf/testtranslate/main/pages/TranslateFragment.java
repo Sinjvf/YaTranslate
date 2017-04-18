@@ -35,7 +35,13 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     TextView mainWordView;
     @BindView(R.id.add_to_favorite)
     ImageView addToFavorite;
+    @BindView(R.id.lang)
+    TextView lang;
 
+    @Override
+    public void setLang(String str) {
+        lang.setText(str);
+    }
 
     @Override
     protected int getIconId() {
@@ -54,36 +60,41 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
 
     @Override
     public void init() {
-        initSpinners();
         initListeners();
     }
 
-    private void initSpinners() {
-        List<String> languages = presenter.getLangList();
-        ArrayAdapter adapter = new ArrayAdapter<>(getView().getContext(), android.R.layout.simple_spinner_item, languages);
+
+    @Override
+    public void updateToSpinner(List<String> langsTo, String defaultTo) {
+        updateOneSpinner(toLangView, langsTo, defaultTo);
+    }
+    @Override
+    public void updateFromSpinner(List<String> langsTo, String defaultTo) {
+        updateOneSpinner(fromLangView, langsTo, defaultTo);
+    }
+
+    public void updateOneSpinner(Spinner spinner, List<String> langs, String defaultStr) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, langs);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        fromLangView.setAdapter(adapter);
-        toLangView.setAdapter(adapter);
-        if (languages != null) {
-            try {
-                fromLangView.setSelection(presenter.getDefautlFromLang());
-                toLangView.setSelection(presenter.getDefautlToLang());
-            } catch (Exception e) {
-                //may be null pointer or index out of bounds
-                e.printStackTrace();
-            }
+        spinner.setAdapter(adapter);
+        try {
+            int spinnerPosition = adapter.getPosition(defaultStr);
+            spinner.setSelection(spinnerPosition);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        subs.add(RxAdapterView.selectionEvents(fromLangView)
-                .skip(1)
-                .subscribe((event) -> presenter.fromLangChanged((String) fromLangView.getSelectedItem()))
-        );
-        subs.add(RxAdapterView.selectionEvents(toLangView)
-                .skip(1)
-                .subscribe((event) -> presenter.toLangChanged((String) toLangView.getSelectedItem()))
-        );
+    }
+
+
+    private void initSelectorListeners() {
+        subs.add(RxAdapterView.itemSelections(fromLangView)
+                .subscribe((event) -> presenter.fromLangChanged((String) fromLangView.getSelectedItem())));
+        subs.add(RxAdapterView.itemSelections(toLangView)
+                .subscribe((event) -> presenter.toLangChanged((String) toLangView.getSelectedItem())));
     }
 
     private void initListeners() {
+        initSelectorListeners();
         subs.add(RxTextView.editorActions(textToTranslateView)
                 .subscribe((event) -> presenter.setNewText(textToTranslateView.getText().toString())));
         subs.add(RxView.clicks(clearTextView)

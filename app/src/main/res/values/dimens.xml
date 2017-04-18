@@ -6,6 +6,7 @@
     <dimen name="stroke">0.5dp</dimen>
     <dimen name="translate_field_height">150dp</dimen>
     <dimen name="lang_info_width">60dp</dimen>
+    <dimen name="lang_width">150dp</dimen>
 
     <dimen name="from_text_size">20sp</dimen>
     <dimen name="to_text_size">15sp</dimen>
