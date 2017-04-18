@@ -1,5 +1,6 @@
 package ru.sinjvf.testtranslate.retrofit;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -11,11 +12,18 @@ import ru.sinjvf.testtranslate.retrofit.responses.SuperResponse;
 
 public class ServerCallback<R extends SuperResponse> implements Callback<R> {
 
-    public void onSuccess(Response<R> response){}
+    protected final String TAG = "My_Tag:"+getClass().getSimpleName();
+    public void onSuccess(R response){}
+    public void onError(ResponseBody response){}
 
     @Override
     public void onResponse(Call<R> call, Response<R> response) {
-        onSuccess(response);
+        if (response.isSuccessful()){
+            onSuccess(response.body());
+        }else {
+            onError((response.errorBody()));
+        }
+
     }
 
     @Override

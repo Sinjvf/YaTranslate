@@ -2,11 +2,14 @@ package ru.sinjvf.testtranslate.main.pages;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import retrofit2.Response;
+import okhttp3.ResponseBody;
+import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.data.DaoSession;
 import ru.sinjvf.testtranslate.data.JoinLangs;
 import ru.sinjvf.testtranslate.data.JoinLangsDao;
@@ -38,11 +41,11 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
         joinLangsDao = daoSession.getJoinLangsDao();
         List<Lang> langs = langDao.queryBuilder()
                 .list();
-        if (langs==null || langs.size()==0){
+       // if (langs==null || langs.size()==0){
             handler.getLang(currentLangPair.getFrom(), getLangs());
-        }else {
+       /* }else {
             setSpinners();
-        }
+        }*/
 
     }
 
@@ -165,13 +168,33 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     public ServerCallback<GetLangsResponse> getLangs() {
         return new ServerCallback<GetLangsResponse>() {
             @Override
-            public void onSuccess(Response<GetLangsResponse> response) {
+            public void onSuccess(GetLangsResponse response) {
                 super.onSuccess(response);
                 Log.d(TAG, "onSuccess: ");
-                saveLangs(response.body());
+           //     saveLangs(response);
             }
 
-
+            @Override
+            public void onError(ResponseBody response) {
+                super.onError(response);
+                Gson gson = new Gson();
+                try {
+                    String respStr = response.string();
+                    GetLangsResponse resp = gson.fromJson(respStr, GetLangsResponse.class);
+                    switch (resp.getCode()){
+                        case 401:
+                            getView().showSnack(R.string.err_wrong_key);
+                            break;
+                        case 402:
+                            getView().showSnack(R.string.err_invalid_key);
+                            break;
+                    }
+                }catch (Exception e){
+                    if(isViewAttached()){
+                        getView().showSnack(R.string.err_unfortunate);
+                    }
+                }
+            }
         };
     }
 }

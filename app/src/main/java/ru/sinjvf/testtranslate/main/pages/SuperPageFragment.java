@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,7 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
     protected final String TAG = "My_Tag:"+getClass().getSimpleName();
     protected Unbinder unbinder;
     protected CompositeSubscription subs = new CompositeSubscription();
-
+    private View rootView;
 
     @Override
     public Drawable getPict(Resources res) {
@@ -39,6 +40,12 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
 
 
     @Override
+    public void showSnack(int strId) {
+        String str = getString(strId);
+        Snackbar.make(rootView, str, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
     public String getTitle(Resources res) {
         return res.getString(getTitleId());
     }
@@ -48,7 +55,7 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View rootView = inflater.inflate(getLayoutId(), container, false);
+        rootView = inflater.inflate(getLayoutId(), container, false);
         unbinder = ButterKnife.bind(this, rootView);
         return rootView;
     }
