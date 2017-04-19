@@ -44,6 +44,7 @@
         android:textSize="@dimen/from_text_size"
         android:textColor="@android:color/black"
         android:id="@+id/text"
+        android:textIsSelectable="true"
         tools:text="Привет"/>
     <TextView
         android:layout_width="match_parent"
@@ -55,6 +56,7 @@
         android:layout_below="@id/text"
         android:id="@+id/translation"
         android:textSize="@dimen/to_text_size"
+        android:textIsSelectable="true"
         android:textColor="@color/greyDivider"
         tools:text="hi"/>
 

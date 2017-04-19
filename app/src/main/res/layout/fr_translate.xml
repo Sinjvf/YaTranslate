@@ -25,7 +25,8 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_double_arrow"/>
+            app:srcCompat="@drawable/ic_double_arrow"
+            android:id="@+id/swap_langs"/>
         <Spinner
             android:layout_width="@dimen/lang_width"
             android:layout_height="wrap_content"
@@ -80,6 +81,7 @@
         android:paddingEnd="@dimen/img_with_padding"
         android:background="@drawable/sh_yellow_rectangle"
         android:visibility="gone"
+        android:textIsSelectable="true"
         tools:visibility="visible"
         tools:text="Hi"/>
 

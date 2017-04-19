@@ -77,7 +77,7 @@ public class TranslateUtils {
         SingleTranslationDao translationDao =  daoSession.getSingleTranslationDao();
 
         QueryBuilder<SingleTranslation> qb = translationDao.queryBuilder();
-        qb.and(SingleTranslationDao.Properties.Text.eq(text), SingleTranslationDao.Properties.Lang.eq(lang));
+        qb.where(qb.and(SingleTranslationDao.Properties.Text.eq(text), SingleTranslationDao.Properties.Lang.eq(lang)));
         List<SingleTranslation> list = qb.list();
 
         if (list != null && list.size() != 0) {

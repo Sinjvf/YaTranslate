@@ -23,6 +23,7 @@ public class HistoryFragment extends SuperPageFragment<HistoryFavoritesView, His
     @Override
     public void init() {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new HistoryFavoritesAdapter(presenter);
         adapter.setList(presenter.getList());

@@ -35,7 +35,7 @@ import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Sinjvf on 17.04.2017.
- * main fragnet with translation form
+ * main fragment with translation form
  */
 
 public class TranslateFragment extends SuperPageFragment<TranslateView, TranslatePresenter> implements TranslateView {
@@ -54,6 +54,8 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     TextView languageView;
     @BindView(R.id.license)
     TextView licenseView;
+    @BindView(R.id.swap_langs)
+    ImageView swapLangView;
     @BindView(R.id.add_to_favorite)
     CheckBox addToFavorite;
     @BindView(R.id.minor_translations_container)
@@ -147,6 +149,9 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
         //click "favorite" star image
         subs.add(RxCompoundButton.checkedChanges(addToFavorite)
                 .subscribe((aBoolean) -> presenter.favoriteClick(aBoolean)));
+        //click "swap"
+        subs.add(RxView.clicks(swapLangView)
+                .subscribe((event) -> presenter.swapClick()));
     }
 
     //clear text in translation form and clear last translation views

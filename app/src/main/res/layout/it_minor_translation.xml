@@ -19,6 +19,7 @@
         android:layout_toRightOf="@id/index"
         android:textColor="@android:color/black"
         android:textSize="@dimen/to_text_size"
+        android:textIsSelectable="true"
         android:id="@+id/translation"
         tools:text="hi, hello"/>
 
@@ -29,6 +30,7 @@
         android:layout_toRightOf="@id/index"
         android:layout_below="@id/translation"
         android:textColor="@color/greyDivider"
+        android:textIsSelectable="true"
         android:textSize="@dimen/to_text_size"
         android:id="@+id/text"
         tools:text="(привет)"/>

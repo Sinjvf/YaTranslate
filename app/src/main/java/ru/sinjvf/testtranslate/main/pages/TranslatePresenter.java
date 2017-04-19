@@ -56,7 +56,13 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
 
     public void setNewText(String text) {
         Log.d(TAG, "setNewText: " + text);
-        handler.translate(text, currentLangPair.getStr(), translate(text));
+        currentTranslation = TranslateUtils.getByText(text, currentLangPair.getStr(), daoSession);
+        if (currentTranslation!=null){
+            setTranslatedText();
+            Log.d(TAG, "setNewText: "+currentLangPair.getStr()+", "+currentTranslation.getLang());
+        }else {
+            handler.translate(text, currentLangPair.getStr(), translate(text));
+        }
     }
 
     public void favoriteClick(boolean checked){
@@ -65,7 +71,14 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
             TranslateUtils.update(currentTranslation, daoSession);
         }
     }
+    public void swapClick(){
+        if (!isViewAttached())return;
+        String tmp = currentLangPair.getFrom();
+        currentLangPair.setFrom(currentLangPair.getTo());
+        currentLangPair.setTo(tmp);
+        setSpinners();
 
+    }
 
     private void saveLangs(GetLangsResponse response) {
         LangUtils.saveLangs(response, daoSession);
