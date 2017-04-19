@@ -21,6 +21,11 @@ public class TranslateUtils {
         translationDao.update(tr);
     }
 
+    public static void delete(SingleTranslation tr, DaoSession daoSession){
+        SingleTranslationDao translationDao =  daoSession.getSingleTranslationDao();
+        translationDao.delete(tr);
+    }
+
     public static List<SingleTranslation> getHistory(DaoSession daoSession){
         SingleTranslationDao translationDao =  daoSession.getSingleTranslationDao();
         List<SingleTranslation> list = translationDao.queryBuilder()

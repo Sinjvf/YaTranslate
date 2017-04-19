@@ -7,8 +7,9 @@
 
     <string name="def_from_lang">Русский</string>
     <string name="def_to_lang">Английский</string>
-    <string name="licence">Переведено сервисом «Яндекс.Переводчик»</string>
-
+    <string name="license">Переведено сервисом </string>
+    <string name="service_name">«Яндекс.Переводчик»</string>
+    <string name="license_url">http://translate.yandex.ru/</string>
 
     <string name="err_unfortunate">При загрузке данных произошла ошибка</string>
     <string name="err_wrong_key">Неправильный API-ключ</string>

@@ -1,5 +1,6 @@
 package ru.sinjvf.testtranslate.main.pages;
 
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import butterknife.BindView;
@@ -11,15 +12,17 @@ import ru.sinjvf.testtranslate.R;
  * fragment with favorite translations
  */
 
-public class FavoritesFragment extends SuperPageFragment<FavoritesView, FavoritesPresenter> implements FavoritesView {
+public class FavoritesFragment extends SuperPageFragment<HistoryFavoritesView, FavoritesPresenter> implements HistoryFavoritesView {
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
-    private FavoritesAdapter adapter;
+    private HistoryFavoritesAdapter adapter;
 
     //recyclerView initianalisation
     @Override
     public void init() {
-        adapter = new FavoritesAdapter();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new HistoryFavoritesAdapter(presenter);
         adapter.setList(presenter.getList());
         recyclerView.setAdapter(adapter);
         //recyclerView
@@ -51,4 +54,8 @@ public class FavoritesFragment extends SuperPageFragment<FavoritesView, Favorite
     }
 
 
+    @Override
+    public void deleteItem(int position) {
+        adapter.deleteItem(position);
+    }
 }

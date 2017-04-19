@@ -64,10 +64,11 @@
         android:textSize="@dimen/to_text_size"
         android:textColor="@android:color/black"
         android:layout_below="@id/text_to_translate"
+        android:visibility="gone"
+        tools:visibility="visible"
         tools:text="Английский:"/>
     <TextView
         android:padding="@dimen/small_margin"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/main_translation"
@@ -78,17 +79,21 @@
         android:paddingRight="@dimen/img_with_padding"
         android:paddingEnd="@dimen/img_with_padding"
         android:background="@drawable/sh_yellow_rectangle"
+        android:visibility="gone"
+        tools:visibility="visible"
         tools:text="Hi"/>
 
     <TextView
         android:padding="@dimen/small_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/licence"
+        android:id="@+id/license"
         android:textSize="@dimen/to_text_size"
         android:textColor="@android:color/black"
         android:layout_below="@id/main_translation"
-        android:text="@string/licence"/>
+        android:text="@string/license"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <CheckBox
         android:layout_width="@dimen/img_size"
@@ -103,7 +108,7 @@
         android:visibility="gone"
         tools:visibility="visible"/>
     <LinearLayout
-        android:layout_below="@id/language"
+        android:layout_below="@id/main_translation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/minor_translations_container"

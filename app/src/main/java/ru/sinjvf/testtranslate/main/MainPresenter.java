@@ -1,7 +1,6 @@
 package ru.sinjvf.testtranslate.main;
 
 import android.content.res.Resources;
-import android.util.Log;
 
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
@@ -30,14 +29,12 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
             model.initTabsAndPages(getView().getResources());
             getView().initPages(model.getFragments());
             getView().initTabs(model.getTabs());
-            getView().initialization();
             setTitle(0);
         }
     }
 
     //change toolbar text
     public void setTitle(int position){
-        Log.d(TAG, "setTitle: "+position);
         if (isViewAttached()) {
             Resources res = getView().getResources();
             String title = model.getFragments().get(position).getTitle(res);

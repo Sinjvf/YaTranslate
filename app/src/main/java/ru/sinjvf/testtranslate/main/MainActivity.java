@@ -32,7 +32,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class MainActivity extends MvpActivity<MainView, MainPresenter> implements MainView {
 
-    private final String TAG = "My_Tag:"+getClass().getSimpleName();
+    private final String TAG = "My_Tag:" + getClass().getSimpleName();
     //init views
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -66,17 +66,10 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         ActionBar actionbar = getSupportActionBar();
         if (actionbar == null) return;
         actionbar.setTitle(text);
-        Log.d(TAG, "setToolbarText: ");
+        Log.d(TAG, "setToolbarText: " + text);
     }
 
-    //change title when page in viewPager changes
-    @Override
-    public void initialization() {
-        compositeSubscription.add(RxViewPager.pageSelections(viewPager)
-                .skip(1)
-                .subscribe(position -> presenter.setTitle(position)));
 
-    }
 
     //set icons on tabs
     @Override
@@ -94,12 +87,21 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     }
 
     //set ViewPager data
+    //change title when page in viewPager changes
+    //init when page change - because history and favorites pages affect each other
     @Override
     public void initPages(HashMap<Integer, SuperPageFragment> pagersData) {
         if (pagersData == null) return;
-        MainTabAdapter pagerAdapter = new MainTabAdapter (getSupportFragmentManager(), pagersData);
+        MainTabAdapter pagerAdapter = new MainTabAdapter(getSupportFragmentManager(), pagersData);
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+
+        compositeSubscription.add(RxViewPager.pageSelections(viewPager)
+                .skip(1)
+                .subscribe(position -> {
+                    presenter.setTitle(position);
+                    ((SuperPageFragment)pagerAdapter.getItem(position)).init();
+                }));
     }
 
     @NonNull

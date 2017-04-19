@@ -16,7 +16,6 @@ import ru.sinjvf.testtranslate.main.pages.SuperPageFragment;
 public interface MainView extends MvpView {
     void setToolbarText(String text);
 
-    void initialization();
     void initTabs(HashMap<Integer, Drawable> tabsData);
     void initPages(HashMap<Integer, SuperPageFragment> pagersData);
     Resources getResources();

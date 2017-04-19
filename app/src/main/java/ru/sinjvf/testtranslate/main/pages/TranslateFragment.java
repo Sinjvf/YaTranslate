@@ -1,5 +1,13 @@
 package ru.sinjvf.testtranslate.main.pages;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -22,6 +30,7 @@ import butterknife.BindView;
 import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.data.SingleTranslation;
 import ru.sinjvf.testtranslate.data.TranslationText;
+import rx.subscriptions.CompositeSubscription;
 
 
 /**
@@ -43,8 +52,8 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     TextView mainTranslationView;
     @BindView(R.id.language)
     TextView languageView;
-    @BindView(R.id.licence)
-    TextView licenceView;
+    @BindView(R.id.license)
+    TextView licenseView;
     @BindView(R.id.add_to_favorite)
     CheckBox addToFavorite;
     @BindView(R.id.minor_translations_container)
@@ -68,8 +77,8 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
 
     @Override
     public void init() {
+        setSpan();
         initListeners();
-        setFieldsVisibility(false);
     }
 
     //get fragment instance
@@ -99,17 +108,36 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
             e.printStackTrace();
         }
     }
-
-    //listeners of events in spinners
-    private void initSelectorListeners() {
-        subs.add(RxAdapterView.itemSelections(fromLangView)
-                .subscribe((event) -> presenter.fromLangChanged((String) fromLangView.getSelectedItem())));
-        subs.add(RxAdapterView.itemSelections(toLangView)
-                .subscribe((event) -> presenter.toLangChanged((String) toLangView.getSelectedItem())));
+    //set spanned text with link needed in license
+    private void setSpan(){
+        String text = getString(R.string.license)+" "+getString(R.string.service_name);
+        Spannable spannableLicence = new SpannableString(text);
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View textView) {
+                String licenseUrl =  getString(R.string.license_url);
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(licenseUrl));
+                startActivity(browserIntent);
+            }
+        };
+        int posStart = text.indexOf(getString(R.string.service_name));
+        int posEnd = text.length();
+        spannableLicence.setSpan(new UnderlineSpan(), posStart, posEnd,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE );
+        spannableLicence.setSpan(clickableSpan, posStart, posEnd,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        licenseView.setText(spannableLicence);
+        licenseView.setMovementMethod(LinkMovementMethod.getInstance());
     }
+
     //all events listeners
     private void initListeners() {
-        initSelectorListeners();
+        subs = new CompositeSubscription();
+        //listeners of events in spinners
+        subs.add(RxAdapterView.itemSelections(fromLangView)
+                .skip(1)
+                .subscribe((event) -> presenter.fromLangChanged((String) fromLangView.getSelectedItem())));
+        subs.add(RxAdapterView.itemSelections(toLangView)
+                .skip(1)
+                .subscribe((event) -> presenter.toLangChanged((String) toLangView.getSelectedItem())));
         //click "done" in text for translation
         subs.add(RxTextView.editorActions(textToTranslateView)
                 .subscribe((event) -> presenter.setNewText(textToTranslateView.getText().toString())));
@@ -135,7 +163,7 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
         languageView.setVisibility(show?View.VISIBLE:View.GONE);
         mainTranslationView.setVisibility(show?View.VISIBLE:View.GONE);
         addToFavorite.setVisibility(show?View.VISIBLE:View.GONE);
-        licenceView.setVisibility(show?View.VISIBLE:View.GONE);
+        licenseView.setVisibility(show?View.VISIBLE:View.GONE);
         if(!show)
         trContainer.removeAllViews();
     }
@@ -157,6 +185,7 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
         languageView.setText(langName);
         trContainer.removeAllViews();
         LayoutInflater inflater = getLayoutInflater(null);
+        //set minor translations
         for (int i = 1; i < trList.size(); i++) {
             RelativeLayout minorTranslate = (RelativeLayout) inflater.inflate(R.layout.it_minor_translation, trContainer, false);
             TextView indexView = (TextView)minorTranslate.findViewById(R.id.index);

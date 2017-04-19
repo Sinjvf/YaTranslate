@@ -16,4 +16,6 @@ public class SuperPagePresenter<V extends SuperPageView> extends MvpBasePresente
          //   getView().init();
         }
     }
+
+
 }
