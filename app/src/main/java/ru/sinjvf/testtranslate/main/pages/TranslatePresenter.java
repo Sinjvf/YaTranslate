@@ -2,23 +2,17 @@ package ru.sinjvf.testtranslate.main.pages;
 
 import android.util.Log;
 
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import okhttp3.ResponseBody;
-import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.data.DaoSession;
-import ru.sinjvf.testtranslate.data.JoinLangs;
-import ru.sinjvf.testtranslate.data.JoinLangsDao;
-import ru.sinjvf.testtranslate.data.Lang;
-import ru.sinjvf.testtranslate.data.LangDao;
 import ru.sinjvf.testtranslate.data.LangPair;
+import ru.sinjvf.testtranslate.data.SingleTranslation;
 import ru.sinjvf.testtranslate.retrofit.ServerCallback;
 import ru.sinjvf.testtranslate.retrofit.ServerHandler;
 import ru.sinjvf.testtranslate.retrofit.responses.GetLangsResponse;
+import ru.sinjvf.testtranslate.retrofit.responses.TranslateResponse;
+import ru.sinjvf.testtranslate.utils.LangUtils;
+import ru.sinjvf.testtranslate.utils.TranslateUtils;
 
 /**
  * Created by Sinjvf on 17.04.2017.
@@ -26,9 +20,8 @@ import ru.sinjvf.testtranslate.retrofit.responses.GetLangsResponse;
 
 public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     private LangPair currentLangPair = new LangPair("ru-en");
+    private SingleTranslation currentTranslation;
     private DaoSession daoSession;
-    private LangDao langDao;
-    private JoinLangsDao joinLangsDao;
 
     private ServerHandler handler = new ServerHandler();
 
@@ -37,15 +30,11 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     public void attachView(TranslateView view) {
         super.attachView(view);
         daoSession = getView().getApp().getDaoSession();
-        langDao = daoSession.getLangDao();
-        joinLangsDao = daoSession.getJoinLangsDao();
-        List<Lang> langs = langDao.queryBuilder()
-                .list();
-       // if (langs==null || langs.size()==0){
+        if (!LangUtils.isLangsExist(daoSession)){
             handler.getLang(currentLangPair.getFrom(), getLangs());
-       /* }else {
+        }else {
             setSpinners();
-        }*/
+        }
 
     }
 
@@ -53,148 +42,84 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     public void fromLangChanged(String newLang) {
         Log.d(TAG, "fromLangChanged: " + newLang);
         if (newLang == null) return;
-
-        List<Lang> fromName = langDao.queryBuilder()
-                .where(LangDao.Properties.Name.eq(newLang))
-                .list();
-        if (fromName != null && fromName.size() != 0) {
-            currentLangPair.setFrom(fromName.get(0).getDesc());
-            initToSpinner();
-        }
-        getView().setLang(currentLangPair.getStr());
+        currentLangPair.setFrom(LangUtils.getDescByName(newLang, daoSession));
+        if (!isViewAttached())return;
+        initSpinner(false);
     }
 
     public void toLangChanged(String newLang) {
         Log.d(TAG, "toLangChanged: " + newLang);
         if (newLang == null) return;
-
-        List<Lang> toName = langDao.queryBuilder()
-                .where(LangDao.Properties.Name.eq(newLang))
-                .list();
-        if (toName != null && toName.size() != 0) {
-            currentLangPair.setTo(toName.get(0).getDesc());
-        }
-        getView().setLang(currentLangPair.getStr());
+        currentLangPair.setTo(LangUtils.getDescByName(newLang, daoSession));
+        if (!isViewAttached())return;
     }
 
     public void setNewText(String text) {
         Log.d(TAG, "setNewText: " + text);
+        handler.translate(text, currentLangPair.getStr(), translate(text));
+    }
 
+    public void favoriteClick(boolean checked){
+        if(currentTranslation!=null) {
+            currentTranslation.setIsFavorite(checked);
+            TranslateUtils.update(currentTranslation, daoSession);
+        }
     }
 
 
     private void saveLangs(GetLangsResponse response) {
-        LangPair langPair;
-        long fromId;
-        long toId;
-        JoinLangs join;
-        Map<String, String> descMap = response.getLangMap();
-        for (String pairStr : response.getDirList()) {
-            Log.d(TAG, "saveLangs: "+pairStr);
-            langPair = new LangPair(pairStr);
-            fromId = insertOrIgnoreLang(langPair.getFrom(), descMap);
-            toId = insertOrIgnoreLang(langPair.getTo(), descMap);
-            join = new JoinLangs();
-            join.setFromId(fromId);
-            join.setToId(toId);
-            joinLangsDao.insert(join);
-        }
-        Log.d(TAG, "fill tables: ");
+        LangUtils.saveLangs(response, daoSession);
         setSpinners();
     }
 
     private void setSpinners() {
-        initFromSpinner();
-        initToSpinner();
+        initSpinner(true);
+        initSpinner(false);
     }
 
-    private void initFromSpinner(){
-        List<Lang> queryListAll = langDao.queryBuilder()
-                .list();
-        List<String> fromList = new ArrayList<>();
-        for (Lang singleLang : queryListAll) {
-            if (singleLang.getLangList() != null && singleLang.getLangList().size() != 0) {
-                fromList.add(singleLang.getName());
-            }
-        }
-        List<Lang> fromNameList = langDao.queryBuilder()
-                .where(LangDao.Properties.Desc.eq(currentLangPair.getFrom()))
-                .list();
+    private void initSpinner(boolean isFromSpinner) {
+        if (!isViewAttached()) return;
+        List<String> list = (isFromSpinner)?LangUtils.getFromList(daoSession):LangUtils.getToList(currentLangPair.getFrom(), daoSession);
+        String desc = (isFromSpinner)?currentLangPair.getFrom():currentLangPair.getTo();
+        String name = LangUtils.getNameByDesc(desc, daoSession);
+        getView().updateSpinner(isFromSpinner, list, name);
 
-        String fromName="";
-        if (fromNameList != null && fromNameList.size() != 0){
-            fromName = fromNameList.get(0).getName();
-        }
-        getView().updateFromSpinner(fromList, fromName);
-    }
-    private void initToSpinner(){
-        List<Lang> queryListAll = langDao.queryBuilder()
-                .where(LangDao.Properties.Desc.eq(currentLangPair.getFrom()))
-                .list();
-        List<String> toList = new ArrayList<>();
-        for (Lang singleLang : queryListAll.get(0).getLangList()) {
-            if (singleLang.getLangList() != null && singleLang.getLangList().size() != 0) {
-                toList.add(singleLang.getName());
-            }
-        }
-        List<Lang> toNameList = langDao.queryBuilder()
-                .where(LangDao.Properties.Desc.eq(currentLangPair.getTo()))
-                .list();
-
-        String toName="";
-        if (toNameList != null && toNameList.size() != 0){
-            toName = toNameList.get(0).getName();
-        }
-        getView().updateToSpinner(toList, toName);
     }
 
-
-    //return id
-    private long insertOrIgnoreLang(String desc, Map<String, String> descMap) {
-        Lang lang = new Lang();
-        lang.setDesc(desc);
-        lang.setName(descMap.get(desc));
-        List<Lang> queryListFrom = langDao.queryBuilder()
-                .where(LangDao.Properties.Desc.eq(lang.getDesc()))
-                .list();
-        if (queryListFrom != null && queryListFrom.size() != 0) {
-            lang = queryListFrom.get(0);
-        } else {
-            langDao.insert(lang);
-        }
-        return lang.getId();
+    private void saveTranslation(String text, TranslateResponse response){
+        Log.d(TAG, "setTranslatedText: ");
+        long id = TranslateUtils.insert(response, text, daoSession);
+        currentTranslation = TranslateUtils.getById(id, daoSession);
+        setTranslatedText();
     }
+
+    private void setTranslatedText(){
+        if (!isViewAttached())return;
+        String langName = LangUtils.getNameByDesc(currentLangPair.getTo(), daoSession);
+        getView().setTranslation(currentTranslation, langName);
+    }
+
 
     public ServerCallback<GetLangsResponse> getLangs() {
-        return new ServerCallback<GetLangsResponse>() {
+        return new ServerCallback<GetLangsResponse>(getView()) {
             @Override
             public void onSuccess(GetLangsResponse response) {
                 super.onSuccess(response);
                 Log.d(TAG, "onSuccess: ");
-           //     saveLangs(response);
+                saveLangs(response);
             }
 
+        };
+    }
+
+    public ServerCallback<TranslateResponse> translate(String text) {
+        return new ServerCallback<TranslateResponse>(getView()) {
             @Override
-            public void onError(ResponseBody response) {
-                super.onError(response);
-                Gson gson = new Gson();
-                try {
-                    String respStr = response.string();
-                    GetLangsResponse resp = gson.fromJson(respStr, GetLangsResponse.class);
-                    switch (resp.getCode()){
-                        case 401:
-                            getView().showSnack(R.string.err_wrong_key);
-                            break;
-                        case 402:
-                            getView().showSnack(R.string.err_invalid_key);
-                            break;
-                    }
-                }catch (Exception e){
-                    if(isViewAttached()){
-                        getView().showSnack(R.string.err_unfortunate);
-                    }
-                }
+            public void onSuccess(TranslateResponse response) {
+                Log.d(TAG, "onSuccess: ");
+                saveTranslation(text, response);
             }
+
         };
     }
 }

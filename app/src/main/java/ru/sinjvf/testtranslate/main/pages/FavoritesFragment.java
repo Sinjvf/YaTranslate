@@ -8,6 +8,7 @@ import ru.sinjvf.testtranslate.R;
 
 /**
  * Created by Sinjvf on 17.04.2017.
+ * fragment with favorite translations
  */
 
 public class FavoritesFragment extends SuperPageFragment<FavoritesView, FavoritesPresenter> implements FavoritesView {
@@ -15,6 +16,7 @@ public class FavoritesFragment extends SuperPageFragment<FavoritesView, Favorite
     RecyclerView recyclerView;
     private FavoritesAdapter adapter;
 
+    //recyclerView initianalisation
     @Override
     public void init() {
         adapter = new FavoritesAdapter();

@@ -34,7 +34,7 @@ public class ServerContract {
     public static final String LANG = "lang";
     public static final String KEY = "key";
     public static final String UI = "ui";
-    public static final String KEY_VALUE = "ernsl.1.1.20170417T073908Z.04b66ff6448be705.7f8f88b33b21f34a73e395378213d69d59f8a4da";
+    public static final String KEY_VALUE = "trnsl.1.1.20170417T073908Z.04b66ff6448be705.7f8f88b33b21f34a73e395378213d69d59f8a4da";
 
 
     public interface ProfileAPI {

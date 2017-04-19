@@ -19,7 +19,7 @@
         android:layout_toRightOf="@id/index"
         android:textColor="@android:color/black"
         android:textSize="@dimen/to_text_size"
-        android:id="@+id/main_word"
+        android:id="@+id/translation"
         tools:text="hi, hello"/>
 
     <TextView
@@ -27,9 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/index"
         android:layout_toRightOf="@id/index"
-        android:layout_below="@id/main_word"
+        android:layout_below="@id/translation"
         android:textColor="@color/greyDivider"
         android:textSize="@dimen/to_text_size"
-        android:id="@+id/translation"
+        android:id="@+id/text"
         tools:text="(привет)"/>
 </RelativeLayout>

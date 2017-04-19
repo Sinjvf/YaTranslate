@@ -13,7 +13,7 @@ public class SuperPagePresenter<V extends SuperPageView> extends MvpBasePresente
     public void attachView(V view) {
         super.attachView(view);
         if (isViewAttached()) {
-            getView().init();
+         //   getView().init();
         }
     }
 }

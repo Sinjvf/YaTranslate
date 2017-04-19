@@ -6,14 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import ru.sinjvf.testtranslate.data.LangPair;
 import ru.sinjvf.testtranslate.retrofit.responses.GetLangsResponse;
 import ru.sinjvf.testtranslate.retrofit.responses.SuperResponse;
 import ru.sinjvf.testtranslate.retrofit.responses.TranslateResponse;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Sinjvf on 17.04.2017.
@@ -44,12 +39,11 @@ public class ServerHandler {
 
     }
 
-    public void translate(String text, LangPair pair, ServerCallback<TranslateResponse> callback) {
+    public void translate(String text, String pairStr, ServerCallback<TranslateResponse> callback) {
         Log.d(TAG, "translate: ");
-        String lang = pair.getStr();
         Map<String, String> map = new HashMap<>();
         map.put(ServerContract.TEXT, text);
-        map.put(ServerContract.LANG, lang);
+        map.put(ServerContract.LANG, pairStr);
         map.put(ServerContract.KEY, ServerContract.KEY_VALUE);
         callService(callback, () -> service.translate(map));
     }

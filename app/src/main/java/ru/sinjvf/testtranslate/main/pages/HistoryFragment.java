@@ -16,6 +16,8 @@ public class HistoryFragment extends SuperPageFragment<HistoryView, HistoryPrese
     RecyclerView recyclerView;
     private FavoritesAdapter adapter;
 
+
+    //recyclerView initianalisation
     @Override
     public void init() {
         adapter = new FavoritesAdapter();

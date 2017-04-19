@@ -20,8 +20,7 @@ import ru.sinjvf.testtranslate.data.SingleTranslation;
  */
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.SimpleViewHolder> {
-    private static final int FAVORITE_TYPE = 1;
-    private static final int NOT_FAVORITE_TYPE = 0;
+
 
 
     private List<SingleTranslation> list;
@@ -29,19 +28,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.SimpleVi
     @Override
     public HistoryAdapter.SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int layoutId;
-        layoutId = (viewType == FAVORITE_TYPE) ? R.layout.rec_it_favorite : R.layout.rec_it_not_favorite;
+        layoutId = R.layout.rec_it_favorite ;
         View v = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
         return new SimpleViewHolder(v);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (list.get(position).getIsFavorite()) {
-            return FAVORITE_TYPE;
-        } else {
-            return NOT_FAVORITE_TYPE;
-        }
-    }
+
 
     @Override
     public void onBindViewHolder(HistoryAdapter.SimpleViewHolder holder, int position) {
@@ -62,7 +54,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.SimpleVi
     public class SimpleViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.icon)
         ImageView iconView;
-        @BindView(R.id.main_word)
+        @BindView(R.id.language)
         TextView mainWordView;
         @BindView(R.id.main_translation)
         TextView mainTranslationView;

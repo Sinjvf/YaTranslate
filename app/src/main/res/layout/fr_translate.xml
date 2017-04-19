@@ -32,40 +32,39 @@
             android:id="@+id/to_language">
         </Spinner>
     </LinearLayout>
-    <RelativeLayout
+
+    <EditText
+
+        android:background="@drawable/sh_rectangle"
         android:layout_below="@id/select_language"
-        android:layout_margin="@dimen/small_margin"
-        android:padding="@dimen/small_margin"
         android:layout_width="match_parent"
         android:layout_height="@dimen/translate_field_height"
-        android:background="@drawable/sh_rectangle"
-        android:id="@+id/translation_field">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            app:srcCompat="@drawable/ic_close"
-            android:tint="@color/greyDivider"
-            android:id="@+id/clear_text" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/lang"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
-        <EditText
-            android:layout_above="@id/clear_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/text_to_translate"
-            android:imeOptions="actionDone"
-            android:inputType="text"
-            android:layout_alignParentTop="true"
-            android:background="@android:color/transparent"/>
-    </RelativeLayout>
+        android:padding="@dimen/text_margin"
+        android:layout_margin="@dimen/small_margin"
+        android:paddingBottom="@dimen/img_with_padding"
+        android:id="@+id/text_to_translate"
+        android:imeOptions="actionDone"
+        android:inputType="text"/>
+
+    <ImageView
+        android:layout_width="@dimen/img_size"
+        android:layout_height="@dimen/img_size"
+        android:layout_margin="@dimen/small_margin"
+        android:layout_alignBottom="@id/text_to_translate"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        app:srcCompat="@drawable/ic_close"
+        android:tint="@color/greyDivider"
+        android:id="@+id/clear_text" />
+    <TextView
+        android:padding="@dimen/small_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/language"
+        android:textSize="@dimen/to_text_size"
+        android:textColor="@android:color/black"
+        android:layout_below="@id/text_to_translate"
+        tools:text="Английский:"/>
     <TextView
         android:padding="@dimen/small_margin"
 
@@ -74,32 +73,40 @@
         android:id="@+id/main_translation"
         android:textSize="@dimen/from_text_size"
         android:textColor="@android:color/black"
-        android:layout_below="@id/translation_field"
+        android:layout_below="@id/language"
+        android:layout_margin="@dimen/small_margin"
+        android:paddingRight="@dimen/img_with_padding"
+        android:paddingEnd="@dimen/img_with_padding"
+        android:background="@drawable/sh_yellow_rectangle"
         tools:text="Hi"/>
+
     <TextView
         android:padding="@dimen/small_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/main_word"
-        android:textSize="@dimen/from_text_size"
+        android:id="@+id/licence"
+        android:textSize="@dimen/to_text_size"
         android:textColor="@android:color/black"
         android:layout_below="@id/main_translation"
-        tools:text="Привет"/>
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_not_favorite"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
+        android:text="@string/licence"/>
+
+    <CheckBox
+        android:layout_width="@dimen/img_size"
+        android:layout_height="@dimen/img_size"
+        android:button="@drawable/sel_star"
+        android:layout_alignEnd="@id/main_translation"
+        android:layout_alignRight="@id/main_translation"
         android:layout_alignTop="@id/main_translation"
         android:tint="@color/colorPrimary"
         android:id="@+id/add_to_favorite"
         android:layout_margin="@dimen/small_margin"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
     <LinearLayout
+        android:layout_below="@id/language"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/other_translations_container"
+        android:id="@+id/minor_translations_container"
         android:orientation="vertical">
 
     </LinearLayout>

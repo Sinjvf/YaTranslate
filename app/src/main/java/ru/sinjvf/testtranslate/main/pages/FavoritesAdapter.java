@@ -17,7 +17,7 @@ import ru.sinjvf.testtranslate.data.SingleTranslation;
 
 /**
  * Created by Sinjvf on 17.04.2017.
- * Fragment with favorite translations
+ * Recycler Adapter for fragment with favorite translations
  */
 
 public class FavoritesAdapter extends  RecyclerView.Adapter<FavoritesAdapter.SimpleViewHolder> {
@@ -48,7 +48,7 @@ public class FavoritesAdapter extends  RecyclerView.Adapter<FavoritesAdapter.Sim
     public class SimpleViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.icon)
         ImageView iconView;
-        @BindView(R.id.main_word)
+        @BindView(R.id.language)
         TextView mainWordView;
         @BindView(R.id.main_translation)
         TextView mainTranslationView;

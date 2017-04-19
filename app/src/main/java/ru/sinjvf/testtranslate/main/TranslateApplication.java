@@ -9,6 +9,7 @@ import ru.sinjvf.testtranslate.data.DaoSession;
 
 /**
  * Created by Sinjvf on 18.04.2017.
+ * Application. Create dao database
  */
 
 public class TranslateApplication  extends Application{

@@ -23,10 +23,10 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         init();
     }
 
+    //init model and set pages and tabs
     public void init(){
         if (isViewAttached()) {
             compositeSubscription = new CompositeSubscription();
-
             model.initTabsAndPages(getView().getResources());
             getView().initPages(model.getFragments());
             getView().initTabs(model.getTabs());
@@ -35,6 +35,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         }
     }
 
+    //change toolbar text
     public void setTitle(int position){
         Log.d(TAG, "setTitle: "+position);
         if (isViewAttached()) {

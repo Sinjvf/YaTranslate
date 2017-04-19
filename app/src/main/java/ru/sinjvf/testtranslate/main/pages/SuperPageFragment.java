@@ -20,6 +20,7 @@ import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Sinjvf on 17.04.2017.
+ * SuperClass for ViewPager's fragments
  */
 
 public abstract class SuperPageFragment<V extends SuperPageView, P extends SuperPagePresenter<V>> extends MvpFragment<V, P> implements SuperPageView {
@@ -29,6 +30,7 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
     protected CompositeSubscription subs = new CompositeSubscription();
     private View rootView;
 
+    //pict in viewPager tab
     @Override
     public Drawable getPict(Resources res) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -38,13 +40,13 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
         }
     }
 
-
     @Override
     public void showSnack(int strId) {
         String str = getString(strId);
         Snackbar.make(rootView, str, Snackbar.LENGTH_LONG).show();
     }
 
+    //text in toolbar
     @Override
     public String getTitle(Resources res) {
         return res.getString(getTitleId());
@@ -61,12 +63,23 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        init();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (subs != null)
+            subs.unsubscribe();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (unbinder != null)
             unbinder.unbind();
-        if (subs != null)
-            subs.unsubscribe();
     }
 
 

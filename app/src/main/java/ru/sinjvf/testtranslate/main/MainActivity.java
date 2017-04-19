@@ -1,5 +1,6 @@
 package ru.sinjvf.testtranslate.main;
 
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.sinjvf.testtranslate.R;
@@ -31,12 +33,16 @@ import rx.subscriptions.CompositeSubscription;
 public class MainActivity extends MvpActivity<MainView, MainPresenter> implements MainView {
 
     private final String TAG = "My_Tag:"+getClass().getSimpleName();
+    //init views
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.tabs)
     TabLayout tabLayout;
+    @BindColor(android.R.color.black)
+    int iconColor;
+    //for unsubscribe from events when finish
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
 
@@ -54,6 +60,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         setSupportActionBar(toolbar);
     }
 
+    //to changing toolbar text
     @Override
     public void setToolbarText(@NotNull String text) {
         ActionBar actionbar = getSupportActionBar();
@@ -62,6 +69,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         Log.d(TAG, "setToolbarText: ");
     }
 
+    //change title when page in viewPager changes
     @Override
     public void initialization() {
         compositeSubscription.add(RxViewPager.pageSelections(viewPager)
@@ -70,23 +78,22 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
     }
 
+    //set icons on tabs
     @Override
     public void initTabs(HashMap<Integer, Drawable> tabsData) {
         if (tabsData == null) return;
 
-   /*     tabLayout.setTabTextColors(
-                ContextCompat.getColor(getContext(), R.color.tab_normal_account_color),
-                ContextCompat.getColor(getContext(), R.color.tab_selected_color));
-*/
-
         for (Map.Entry<Integer, Drawable> item : tabsData.entrySet()) {
             TabLayout.Tab tab = tabLayout.getTabAt(item.getKey());
-            tab.setIcon(item.getValue());
+            Drawable icon = item.getValue();
+            icon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+            tab.setIcon(icon);
         }
 
 
     }
 
+    //set ViewPager data
     @Override
     public void initPages(HashMap<Integer, SuperPageFragment> pagersData) {
         if (pagersData == null) return;
