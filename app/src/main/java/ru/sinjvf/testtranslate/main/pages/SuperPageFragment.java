@@ -91,5 +91,9 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
     protected abstract int getIconId();
     protected abstract int getTitleId();
     protected abstract int getLayoutId();
-    public abstract void init();
+    public  void init(){
+        if (subs != null)
+            subs.unsubscribe();
+        subs = new CompositeSubscription();
+    }
 }

@@ -1,15 +1,21 @@
 package ru.sinjvf.testtranslate.main.pages;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -30,7 +36,6 @@ import butterknife.BindView;
 import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.data.SingleTranslation;
 import ru.sinjvf.testtranslate.data.TranslationText;
-import rx.subscriptions.CompositeSubscription;
 
 
 /**
@@ -61,6 +66,13 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     @BindView(R.id.minor_translations_container)
     LinearLayout trContainer;
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view =   super.onCreateView(inflater, container, savedInstanceState);
+        setSpan();
+        return view;
+    }
 
     @Override
     protected int getIconId() {
@@ -79,7 +91,7 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
 
     @Override
     public void init() {
-        setSpan();
+        super.init();
         initListeners();
     }
 
@@ -111,7 +123,8 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
         }
     }
     //set spanned text with link needed in license
-    private void setSpan(){
+    private void setSpan() {
+        Log.d(TAG, "setSpan: ");
         String text = getString(R.string.license)+" "+getString(R.string.service_name);
         Spannable spannableLicence = new SpannableString(text);
         ClickableSpan clickableSpan = new ClickableSpan() {
@@ -132,7 +145,7 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
 
     //all events listeners
     private void initListeners() {
-        subs = new CompositeSubscription();
+
         //listeners of events in spinners
         subs.add(RxAdapterView.itemSelections(fromLangView)
                 .skip(1)
@@ -142,7 +155,10 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
                 .subscribe((event) -> presenter.toLangChanged((String) toLangView.getSelectedItem())));
         //click "done" in text for translation
         subs.add(RxTextView.editorActions(textToTranslateView)
-                .subscribe((event) -> presenter.setNewText(textToTranslateView.getText().toString())));
+                .subscribe((event) -> {
+                    presenter.setNewText(textToTranslateView.getText().toString());
+                    hideKeyboard();
+                }));
         //click "clearText" button
         subs.add(RxView.clicks(clearTextView)
                 .subscribe((event) -> clearText()));
@@ -152,6 +168,14 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
         //click "swap"
         subs.add(RxView.clicks(swapLangView)
                 .subscribe((event) -> presenter.swapClick()));
+    }
+
+    private void hideKeyboard() {
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     //clear text in translation form and clear last translation views

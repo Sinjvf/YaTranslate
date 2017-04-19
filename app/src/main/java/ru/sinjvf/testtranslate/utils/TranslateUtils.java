@@ -7,8 +7,6 @@ import java.util.List;
 import ru.sinjvf.testtranslate.data.DaoSession;
 import ru.sinjvf.testtranslate.data.SingleTranslation;
 import ru.sinjvf.testtranslate.data.SingleTranslationDao;
-import ru.sinjvf.testtranslate.data.TranslationText;
-import ru.sinjvf.testtranslate.data.TranslationTextDao;
 import ru.sinjvf.testtranslate.retrofit.responses.TranslateResponse;
 
 /**
@@ -29,7 +27,21 @@ public class TranslateUtils {
     public static List<SingleTranslation> getHistory(DaoSession daoSession){
         SingleTranslationDao translationDao =  daoSession.getSingleTranslationDao();
         List<SingleTranslation> list = translationDao.queryBuilder()
+                .orderDesc(SingleTranslationDao.Properties.Id)
                 .list();
+        return list;
+    }
+
+    public static List<SingleTranslation> getHistoryFiltred(String filter, DaoSession daoSession){
+        SingleTranslationDao translationDao =  daoSession.getSingleTranslationDao();
+
+
+        QueryBuilder<SingleTranslation> qb = translationDao.queryBuilder();
+        qb.where(qb.or(SingleTranslationDao.Properties.MainTranslation.like("%"+filter+"%"),
+                SingleTranslationDao.Properties.Text.like("%"+filter+"%")));
+        qb.orderDesc(SingleTranslationDao.Properties.Id);
+        List<SingleTranslation> list = qb.list();
+
         return list;
     }
 
@@ -37,27 +49,31 @@ public class TranslateUtils {
         SingleTranslationDao translationDao =  daoSession.getSingleTranslationDao();
         List<SingleTranslation> list = translationDao.queryBuilder()
                 .where(SingleTranslationDao.Properties.IsFavorite.eq(true))
+                .orderDesc(SingleTranslationDao.Properties.Id)
                 .list();
         return list;
     }
-
+    public static List<SingleTranslation> getFavoritesFiltered(String filter, DaoSession daoSession){
+        SingleTranslationDao translationDao =  daoSession.getSingleTranslationDao();
+        QueryBuilder<SingleTranslation> qb = translationDao.queryBuilder();
+        qb.where(qb.and(SingleTranslationDao.Properties.IsFavorite.eq(true),
+                 qb.or(SingleTranslationDao.Properties.Text.like("%"+filter+"%"),
+                        SingleTranslationDao.Properties.MainTranslation.like("%"+filter+"%") )));
+        qb.orderDesc(SingleTranslationDao.Properties.Id);
+        List<SingleTranslation> list = qb.list();
+        return list;
+    }
     public static Long insert(TranslateResponse response, String text, DaoSession daoSession){
         SingleTranslationDao translationDao =  daoSession.getSingleTranslationDao();
         SingleTranslation translation = new SingleTranslation();
         translation.setText(text);
         translation.setIsFavorite(false);
         translation.setLang(response.getLang());
-        translationDao.insert(translation);
-
-        TranslationText trText;
-        TranslationTextDao translationTextDao = daoSession.getTranslationTextDao();
-        for (String singleText: response.getTextList()){
-            trText = new TranslationText();
-            trText.setTranslateId(translation.getId());
-            trText.setText(singleText);
-            translationTextDao.insert(trText);
+        List<String> textList = response.getTextList();
+        if (textList!=null && textList.size()!=0) {
+            translation.setMainTranslation(textList.get(0));
         }
-        translation.resetTranslationList();
+        translationDao.insert(translation);
         return translation.getId();
     }
 

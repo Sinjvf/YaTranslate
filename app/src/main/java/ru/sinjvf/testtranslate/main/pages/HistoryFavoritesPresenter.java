@@ -9,7 +9,7 @@ import ru.sinjvf.testtranslate.data.SingleTranslation;
 import ru.sinjvf.testtranslate.utils.TranslateUtils;
 
 /**
- * Created by Sinjvf on 17.04.2017.
+ * Created by Sinjvf on 18.04.2017.
  */
 
 public abstract class HistoryFavoritesPresenter extends SuperPagePresenter<HistoryFavoritesView> {
@@ -22,6 +22,7 @@ public abstract class HistoryFavoritesPresenter extends SuperPagePresenter<Histo
     }
 
     public abstract List<SingleTranslation> getList();
+    public abstract List<SingleTranslation> getFilteredList(String str);
 
     public void clickFavorite(SingleTranslation translation, boolean ischecked, int position){
         Log.d(TAG, "clickFavorite: "+ischecked +", "+position);
@@ -34,5 +35,10 @@ public abstract class HistoryFavoritesPresenter extends SuperPagePresenter<Histo
         TranslateUtils.delete(translation, daoSession);
         if (!isViewAttached())return;
         getView().deleteItem(position);
+    }
+
+    public void searchChange(String str){
+        if (!isViewAttached())return;
+        getView().setList(getFilteredList(str));
     }
 }

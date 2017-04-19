@@ -62,9 +62,9 @@ public class HistoryFavoritesAdapter extends RecyclerView.Adapter<HistoryFavorit
     public class SimpleViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.icon)
         CheckBox iconView;
-        @BindView(R.id.text)
+        @BindView(R.id.main_text)
         TextView mainWordView;
-        @BindView(R.id.translation)
+        @BindView(R.id.main_translation)
         TextView mainTranslationView;
         @BindView(R.id.lang_info)
         TextView langInfoView;
@@ -80,15 +80,14 @@ public class HistoryFavoritesAdapter extends RecyclerView.Adapter<HistoryFavorit
             try {
                 SingleTranslation translation = list.get(pos);
                 mainWordView.setText(translation.getText());
-                mainTranslationView.setText(translation.getTranslationList().get(0).getText());
+                mainTranslationView.setText(translation.getMainTranslation());
                 langInfoView.setText(translation.getLang());
-                iconView.setChecked(translation.getIsFavorite());
 
                 RxCompoundButton.checkedChanges(iconView)
                         .skip(1)
-                        .subscribe((aBoolean) -> presenter.clickFavorite(translation, aBoolean, getAdapterPosition()));
+                        .subscribe((aBoolean) -> presenter.clickFavorite(translation, aBoolean, pos));
                 RxView.clicks(trashView)
-                        .subscribe((event) -> presenter.clickDelete(translation, getAdapterPosition()));
+                        .subscribe((event) -> presenter.clickDelete(translation, pos));
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }

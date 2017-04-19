@@ -1,5 +1,7 @@
 package ru.sinjvf.testtranslate.main.pages;
 
+import android.util.Log;
+
 import java.util.List;
 
 import ru.sinjvf.testtranslate.data.SingleTranslation;
@@ -12,7 +14,14 @@ import ru.sinjvf.testtranslate.utils.TranslateUtils;
 public class HistoryPresenter extends HistoryFavoritesPresenter {
 
     public List<SingleTranslation> getList(){
+        Log.d(TAG, "getList: ");
         return TranslateUtils.getHistory(daoSession);
+    }
+
+    @Override
+    public List<SingleTranslation> getFilteredList(String str) {
+        Log.d(TAG, "getFilteredList: ");
+        return TranslateUtils.getHistoryFiltred(str, daoSession);
     }
 
     @Override

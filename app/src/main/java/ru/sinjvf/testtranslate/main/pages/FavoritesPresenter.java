@@ -19,6 +19,12 @@ public class FavoritesPresenter extends HistoryFavoritesPresenter {
     }
 
     @Override
+    public List<SingleTranslation> getFilteredList(String str) {
+        Log.d(TAG, "getFilteredList: ");
+        return TranslateUtils.getFavoritesFiltered(str, daoSession);
+    }
+
+    @Override
     public void clickFavorite(SingleTranslation translation, boolean ischecked, int position) {
         super.clickFavorite(translation, ischecked, position);
         //translations now not favorite remove from list

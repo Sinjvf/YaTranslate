@@ -22,6 +22,7 @@ public class SingleTranslation {
     private String lang;
     private String text;
     private boolean isFavorite;
+    private  String mainTranslation;
 
     @ToMany(referencedJoinProperty = "translateId")
     private List<TranslationText> translationList;
@@ -32,13 +33,14 @@ public class SingleTranslation {
     @Generated(hash = 1264460250)
     private transient SingleTranslationDao myDao;
 
-    @Generated(hash = 2100668811)
-    public SingleTranslation(Long id, String lang, String text,
-            boolean isFavorite) {
+    @Generated(hash = 553402247)
+    public SingleTranslation(Long id, String lang, String text, boolean isFavorite,
+            String mainTranslation) {
         this.id = id;
         this.lang = lang;
         this.text = text;
         this.isFavorite = isFavorite;
+        this.mainTranslation = mainTranslation;
     }
 
     @Generated(hash = 377811225)
@@ -75,6 +77,14 @@ public class SingleTranslation {
 
     public void setIsFavorite(boolean isFavorite) {
         this.isFavorite = isFavorite;
+    }
+
+    public String getMainTranslation() {
+        return this.mainTranslation;
+    }
+
+    public void setMainTranslation(String mainTranslation) {
+        this.mainTranslation = mainTranslation;
     }
 
     /**

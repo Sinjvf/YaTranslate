@@ -21,7 +21,7 @@ public class LangUtils {
         LangDao langDao =  daoSession.getLangDao();
         List<Lang> langs = langDao.queryBuilder()
                 .list();
-        return  (langs!=null || langs.size()!=0);
+        return  (langs!=null && langs.size()!=0);
     }
 
     public static List<String> getFromList(DaoSession daoSession){

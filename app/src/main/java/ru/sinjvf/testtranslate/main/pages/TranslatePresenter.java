@@ -81,11 +81,13 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     }
 
     private void saveLangs(GetLangsResponse response) {
+        Log.d(TAG, "saveLangs: ");
         LangUtils.saveLangs(response, daoSession);
         setSpinners();
     }
 
     private void setSpinners() {
+        Log.d(TAG, "setSpinners: ");
         initSpinner(true);
         initSpinner(false);
     }

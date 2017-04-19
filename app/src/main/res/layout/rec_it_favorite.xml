@@ -10,9 +10,6 @@
         android:layout_width="@dimen/img_size"
         android:layout_height="@dimen/img_size"
         android:button="@drawable/sel_star"
-        android:layout_alignEnd="@id/main_translation"
-        android:layout_alignRight="@id/main_translation"
-        android:layout_alignTop="@id/main_translation"
         android:id="@+id/icon"
         android:layout_margin="@dimen/small_margin"/>
     <ImageView
@@ -43,7 +40,7 @@
         android:layout_toLeftOf="@id/lang_info"
         android:textSize="@dimen/from_text_size"
         android:textColor="@android:color/black"
-        android:id="@+id/text"
+        android:id="@+id/main_text"
         android:textIsSelectable="true"
         tools:text="Привет"/>
     <TextView
@@ -53,8 +50,8 @@
         android:layout_toEndOf="@id/icon"
         android:layout_toStartOf="@id/lang_info"
         android:layout_toLeftOf="@id/lang_info"
-        android:layout_below="@id/text"
-        android:id="@+id/translation"
+        android:layout_below="@id/main_text"
+        android:id="@+id/main_translation"
         android:textSize="@dimen/to_text_size"
         android:textIsSelectable="true"
         android:textColor="@color/greyDivider"
