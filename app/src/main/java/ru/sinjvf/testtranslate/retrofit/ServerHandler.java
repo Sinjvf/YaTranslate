@@ -44,7 +44,7 @@ public class ServerHandler {
         Map<String, String> map = new HashMap<>();
         map.put(ServerContract.TEXT, text);
         map.put(ServerContract.LANG, pairStr);
-        map.put(ServerContract.KEY, ServerContract.KEY_VALUE);
+        map.put(ServerContract.KEY, ServerContract.KEY_TRANSLATE);
         callService(callback, () -> service.translate(map));
     }
 
@@ -53,7 +53,16 @@ public class ServerHandler {
         Log.d(TAG, "getLang: ");
         Map<String, String> map = new HashMap<>();
         map.put(ServerContract.UI, ui);
-        map.put(ServerContract.KEY, ServerContract.KEY_VALUE);
+        map.put(ServerContract.KEY, ServerContract.KEY_TRANSLATE);
         callService(callback, () -> service.getlangs(map));
+    }
+
+    public void detectLang(String text, String hint, ServerCallback<TranslateResponse> callback) {
+        Log.d(TAG, "getLang: ");
+        Map<String, String> map = new HashMap<>();
+        map.put(ServerContract.TEXT, text);
+        map.put(ServerContract.HINT, hint);
+        map.put(ServerContract.KEY, ServerContract.KEY_TRANSLATE);
+        callService(callback, () -> service.detectlang(map));
     }
 }

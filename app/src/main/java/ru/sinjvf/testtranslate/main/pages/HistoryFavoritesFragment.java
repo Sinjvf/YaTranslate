@@ -3,6 +3,7 @@ package ru.sinjvf.testtranslate.main.pages;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.view.View;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 
@@ -36,6 +37,8 @@ abstract public class HistoryFavoritesFragment<P extends HistoryFavoritesPresent
         adapter = new HistoryFavoritesAdapter(presenter);
         adapter.setList(presenter.getList());
         recyclerView.setAdapter(adapter);
+        //show license text only when we have translations
+        licenseView.setVisibility((adapter.getItemCount()==0)?View.GONE:View.VISIBLE);
     }
 
     @Override
@@ -53,6 +56,8 @@ abstract public class HistoryFavoritesFragment<P extends HistoryFavoritesPresent
     public void setList(List<SingleTranslation> list) {
         if(adapter!=null) {
             adapter.setList(list);
+            //show license text only when we have translations
+            licenseView.setVisibility((adapter.getItemCount()==0)?View.GONE:View.VISIBLE);
         }
     }
 }

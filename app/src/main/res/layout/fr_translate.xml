@@ -52,11 +52,27 @@
         android:layout_height="@dimen/img_size"
         android:layout_margin="@dimen/small_margin"
         android:layout_alignBottom="@id/text_to_translate"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_alignStart="@id/text_to_translate"
+        android:layout_alignLeft="@id/text_to_translate"
         app:srcCompat="@drawable/ic_close"
         android:tint="@color/greyDivider"
         android:id="@+id/clear_text" />
+    <TextView
+        android:padding="@dimen/small_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/translate_from"
+        android:clickable="true"
+        android:textSize="@dimen/hint_text_size"
+        android:textColor="@color/greyDivider"
+        android:layout_alignBottom="@id/text_to_translate"
+        android:layout_alignEnd="@id/text_to_translate"
+        android:layout_alignRight="@id/text_to_translate"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="Перевести с :"/>
+
+
     <TextView
         android:padding="@dimen/small_margin"
         android:layout_width="match_parent"

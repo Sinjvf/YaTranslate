@@ -5,6 +5,7 @@
     <string name="title_favorites">Избранное</string>
 
 
+    <string name="detect_text">Перевести с :</string>
     <string name="def_from_lang">Русский</string>
     <string name="def_to_lang">Английский</string>
     <string name="license">Переведено сервисом </string>

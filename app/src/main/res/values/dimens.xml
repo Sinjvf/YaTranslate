@@ -10,6 +10,7 @@
 
     <dimen name="from_text_size">20sp</dimen>
     <dimen name="to_text_size">15sp</dimen>
+    <dimen name="hint_text_size">10sp</dimen>
 
 
     <dimen name="img_size">24dp</dimen>

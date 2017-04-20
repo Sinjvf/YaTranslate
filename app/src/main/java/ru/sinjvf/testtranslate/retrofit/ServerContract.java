@@ -24,18 +24,20 @@ import ru.sinjvf.testtranslate.retrofit.responses.TranslateResponse;
 
 public class ServerContract {
     private static final String HOST_NAME = "translate.yandex.net";
-    private static final String BASE_URL = "https://" + HOST_NAME +"/api/v1.5/tr.json/";
+    private static final String BASE_URL = "https://" + HOST_NAME + "/api/v1.5/tr.json/";
 
     private static final String TRANSLATE = "translate";
-    private static final String GET_LANGS ="getLangs";
+    private static final String GET_LANGS = "getLangs";
+    private static final String DETECT_LANG = "detect";
     //   private static final String LOGIN = "app/login";
 
     public static final String TEXT = "text";
     public static final String LANG = "lang";
     public static final String KEY = "key";
     public static final String UI = "ui";
-    public static final String KEY_VALUE = "trnsl.1.1.20170417T073908Z.04b66ff6448be705.7f8f88b33b21f34a73e395378213d69d59f8a4da";
-
+    public static final String HINT = "hint";
+    public static final String KEY_TRANSLATE = "trnsl.1.1.20170417T073908Z.04b66ff6448be705.7f8f88b33b21f34a73e395378213d69d59f8a4da";
+    public static final String KEY_DICTIONARY = "dict.1.1.20170420T082837Z.1b56b16e88d82c32.908a337fda5684a353a4082ca581357c181b4059";
 
     public interface ProfileAPI {
         @POST(TRANSLATE)
@@ -43,6 +45,9 @@ public class ServerContract {
 
         @POST(GET_LANGS)
         Call<GetLangsResponse> getlangs(@QueryMap Map<String, String> params);
+
+        @POST(DETECT_LANG)
+        Call<TranslateResponse> detectlang(@QueryMap Map<String, String> params);
     }
 
     private static class ServiceGenerator {

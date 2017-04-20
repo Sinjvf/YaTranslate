@@ -1,20 +1,32 @@
 package ru.sinjvf.testtranslate.main.pages;
 
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.hannesdorfmann.mosby.mvp.MvpFragment;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.main.TranslateApplication;
 import rx.subscriptions.CompositeSubscription;
 
@@ -29,6 +41,9 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
     protected Unbinder unbinder;
     protected CompositeSubscription subs = new CompositeSubscription();
     private View rootView;
+
+    @BindView(R.id.license)
+    TextView licenseView;
 
     //pict in viewPager tab
     @Override
@@ -59,6 +74,7 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
 
         rootView = inflater.inflate(getLayoutId(), container, false);
         unbinder = ButterKnife.bind(this, rootView);
+        setSpan();
         return rootView;
     }
 
@@ -82,7 +98,26 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
             unbinder.unbind();
     }
 
-
+    //set spanned text with link needed in license
+    protected void setSpan() {
+        Log.d(TAG, "setSpan: ");
+        String text = getString(R.string.license)+" "+getString(R.string.service_name);
+        Spannable spannableLicence = new SpannableString(text);
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View textView) {
+                String licenseUrl =  getString(R.string.license_url);
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(licenseUrl));
+                startActivity(browserIntent);
+            }
+        };
+        int posStart = text.indexOf(getString(R.string.service_name));
+        int posEnd = text.length();
+        spannableLicence.setSpan(new UnderlineSpan(), posStart, posEnd,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE );
+        spannableLicence.setSpan(clickableSpan, posStart, posEnd,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        licenseView.setText(spannableLicence);
+        licenseView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
     @Override
     public TranslateApplication getApp() {
         return (TranslateApplication) getActivity().getApplication();

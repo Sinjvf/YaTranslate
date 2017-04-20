@@ -24,30 +24,30 @@ public class LangUtils {
         return  (langs!=null && langs.size()!=0);
     }
 
-    public static List<String> getFromList(DaoSession daoSession){
+    public static List<Lang> getFromList(DaoSession daoSession){
         LangDao langDao =  daoSession.getLangDao();
         List<Lang> queryListAll = langDao.queryBuilder()
                 .list();
-        List<String> list = new ArrayList<>();
+        List<Lang> list = new ArrayList<>();
         for (Lang singleLang : queryListAll) {
             if (singleLang.getLangList() != null && singleLang.getLangList().size() != 0) {
-                list.add(singleLang.getName());
+                list.add(singleLang);
             }
         }
         return list;
     }
 
-    public static List<String> getToList(String descFrom,DaoSession daoSession){
+    public static List<Lang> getToList(String descFrom,DaoSession daoSession){
         LangDao langDao =  daoSession.getLangDao();
         List<Lang> queryListAll = langDao.queryBuilder()
                 .where(LangDao.Properties.Desc.eq(descFrom))
                 .list();
-        List<String> list = new ArrayList<>();
-        for (Lang singleLang : queryListAll.get(0).getLangList()) {
+        List<Lang> list = queryListAll.get(0).getLangList();
+     /*   for (Lang singleLang : queryListAll.get(0).getLangList()) {
             if (singleLang.getLangList() != null && singleLang.getLangList().size() != 0) {
-                list.add(singleLang.getName());
+                list.add(singleLang);
             }
-        }
+        }*/
         return list;
     }
 

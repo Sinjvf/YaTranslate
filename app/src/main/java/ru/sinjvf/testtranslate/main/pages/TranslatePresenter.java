@@ -5,6 +5,7 @@ import android.util.Log;
 import java.util.List;
 
 import ru.sinjvf.testtranslate.data.DaoSession;
+import ru.sinjvf.testtranslate.data.Lang;
 import ru.sinjvf.testtranslate.data.LangPair;
 import ru.sinjvf.testtranslate.data.SingleTranslation;
 import ru.sinjvf.testtranslate.retrofit.ServerCallback;
@@ -26,96 +27,147 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     private ServerHandler handler = new ServerHandler();
 
 
+    //get current "To" lang
+    public String getCurrentLang() {
+        return LangUtils.getNameByDesc(currentLangPair.getTo(), daoSession);
+    }
+
+    //get current translation
+    public SingleTranslation getCurrentTranslation() {
+        return currentTranslation;
+    }
+
+    //mvp presenter's lifecycle method
     @Override
     public void attachView(TranslateView view) {
         super.attachView(view);
         daoSession = getView().getApp().getDaoSession();
-        if (!LangUtils.isLangsExist(daoSession)){
+        if (!LangUtils.isLangsExist(daoSession)) {
             handler.getLang(currentLangPair.getFrom(), getLangs());
-        }else {
-            setSpinners();
+        } else {
+            currentLangPair =setSpinners();
         }
-
     }
 
-
+    //change the lang in spinner with "from" languages
     public void fromLangChanged(String newLang) {
         Log.d(TAG, "fromLangChanged: " + newLang);
         if (newLang == null) return;
         currentLangPair.setFrom(LangUtils.getDescByName(newLang, daoSession));
-        if (!isViewAttached())return;
+        if (!isViewAttached()) return;
         initSpinner(false);
     }
 
+    //change the lang in spinner with "to" languages
     public void toLangChanged(String newLang) {
         Log.d(TAG, "toLangChanged: " + newLang);
         if (newLang == null) return;
         currentLangPair.setTo(LangUtils.getDescByName(newLang, daoSession));
-        if (!isViewAttached())return;
+        Log.d(TAG, "toLangChanged: " + currentLangPair.getStr());
+        if (!isViewAttached()) return;
     }
 
+    //text in translation field invoke "done" action
     public void setNewText(String text) {
         Log.d(TAG, "setNewText: " + text);
         currentTranslation = TranslateUtils.getByText(text, currentLangPair.getStr(), daoSession);
-        if (currentTranslation!=null){
+        if (currentTranslation != null) {
             setTranslatedText();
-            Log.d(TAG, "setNewText: "+currentLangPair.getStr()+", "+currentTranslation.getLang());
-        }else {
+        } else {
             handler.translate(text, currentLangPair.getStr(), translate(text));
         }
+        handler.detectLang(text, currentLangPair.getFrom(), detect());
     }
 
-    public void favoriteClick(boolean checked){
-        if(currentTranslation!=null) {
+    //click the "add to favorite" star
+    public void favoriteClick(boolean checked) {
+        if (currentTranslation != null) {
             currentTranslation.setIsFavorite(checked);
             TranslateUtils.update(currentTranslation, daoSession);
         }
     }
-    public void swapClick(){
-        if (!isViewAttached())return;
+
+    //click the image "swap languages"
+    public void swapClick() {
+        if (!isViewAttached()) return;
         String tmp = currentLangPair.getFrom();
         currentLangPair.setFrom(currentLangPair.getTo());
         currentLangPair.setTo(tmp);
-        setSpinners();
+        currentLangPair = setSpinners();
 
     }
 
+    //click the text "translate with: <lang name>"
+    public void detectLangClick(String langDesc, String text) {
+        if (!isViewAttached()) return;
+        Log.d(TAG, "detectLangClick: ");
+        currentLangPair.setFrom(langDesc);
+        currentLangPair = setSpinners();
+        currentTranslation = TranslateUtils.getByText(text, currentLangPair.getStr(), daoSession);
+        if (currentTranslation != null) {
+            setTranslatedText();
+        } else {
+            handler.translate(text, currentLangPair.getStr(), translate(text));
+        }
+
+    }
+
+    //save the list of languages
     private void saveLangs(GetLangsResponse response) {
         Log.d(TAG, "saveLangs: ");
         LangUtils.saveLangs(response, daoSession);
         setSpinners();
     }
 
-    private void setSpinners() {
+    //update spinners' lists
+    //return new spinners pair
+    private LangPair setSpinners() {
         Log.d(TAG, "setSpinners: ");
-        initSpinner(true);
-        initSpinner(false);
+        String from = initSpinner(true);
+        String to = initSpinner(false);
+        return new LangPair(from + "-" + to);
     }
 
-    private void initSpinner(boolean isFromSpinner) {
-        if (!isViewAttached()) return;
-        List<String> list = (isFromSpinner)?LangUtils.getFromList(daoSession):LangUtils.getToList(currentLangPair.getFrom(), daoSession);
-        String desc = (isFromSpinner)?currentLangPair.getFrom():currentLangPair.getTo();
+    //update single spinner's list
+    //isFromSpinner = true - update "from" spinner
+    //else update "to" spinner
+    //return description of new lang in spinner
+    private String initSpinner(boolean isFromSpinner) {
+        if (!isViewAttached()) return "";
+        List<Lang> list = (isFromSpinner) ? LangUtils.getFromList(daoSession) : LangUtils.getToList(currentLangPair.getFrom(), daoSession);
+        String desc = (isFromSpinner) ? currentLangPair.getFrom() : currentLangPair.getTo();
         String name = LangUtils.getNameByDesc(desc, daoSession);
-        getView().updateSpinner(isFromSpinner, list, name);
-
+        return getView().updateSpinner(isFromSpinner, list, name);
     }
 
-    private void saveTranslation(String text, TranslateResponse response){
+    //save new translation in DB
+    private void saveTranslation(String text, TranslateResponse response) {
         Log.d(TAG, "saveTranslation: ");
         long id = TranslateUtils.insert(response, text, daoSession);
         currentTranslation = TranslateUtils.getById(id, daoSession);
         setTranslatedText();
     }
 
-    private void setTranslatedText(){
+    //set translation text in the screen
+    private void setTranslatedText() {
         Log.d(TAG, "setTranslatedText: ");
-        if (!isViewAttached())return;
+        if (!isViewAttached()) return;
         String langName = LangUtils.getNameByDesc(currentLangPair.getTo(), daoSession);
         getView().setTranslation(currentTranslation, langName);
     }
 
+    //set the text "translate with: <lang name>" in the screen
+    private void setDetectedLangs(TranslateResponse response) {
+        Log.d(TAG, "setDetectedLangs: ");
+        if (!isViewAttached()) return;
+        if (!response.getLang().equals(currentLangPair.getFrom())) {
+            String langName = LangUtils.getNameByDesc(response.getLang(), daoSession);
+            getView().setDetectedLang(langName, response.getLang());
+        }
+    }
 
+
+    //callback of get langs request response
     public ServerCallback<GetLangsResponse> getLangs() {
         return new ServerCallback<GetLangsResponse>(getView()) {
             @Override
@@ -128,6 +180,7 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
         };
     }
 
+    //callback of translate request response
     public ServerCallback<TranslateResponse> translate(String text) {
         return new ServerCallback<TranslateResponse>(getView()) {
             @Override
@@ -135,7 +188,17 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
                 Log.d(TAG, "onSuccess: ");
                 saveTranslation(text, response);
             }
+        };
+    }
 
+    //callback of detect request response
+    public ServerCallback<TranslateResponse> detect() {
+        return new ServerCallback<TranslateResponse>(getView()) {
+            @Override
+            public void onSuccess(TranslateResponse response) {
+                Log.d(TAG, "onSuccess: ");
+                setDetectedLangs(response);
+            }
         };
     }
 }

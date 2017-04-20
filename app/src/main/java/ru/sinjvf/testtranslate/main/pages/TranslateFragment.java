@@ -1,20 +1,15 @@
 package ru.sinjvf.testtranslate.main.pages;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Spannable;
-import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
-import android.text.style.UnderlineSpan;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -30,10 +25,13 @@ import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindColor;
 import butterknife.BindView;
 import ru.sinjvf.testtranslate.R;
+import ru.sinjvf.testtranslate.data.Lang;
 import ru.sinjvf.testtranslate.data.SingleTranslation;
 import ru.sinjvf.testtranslate.data.TranslationText;
 
@@ -57,22 +55,22 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     TextView mainTranslationView;
     @BindView(R.id.language)
     TextView languageView;
-    @BindView(R.id.license)
-    TextView licenseView;
     @BindView(R.id.swap_langs)
     ImageView swapLangView;
     @BindView(R.id.add_to_favorite)
     CheckBox addToFavorite;
     @BindView(R.id.minor_translations_container)
     LinearLayout trContainer;
+    @BindView(R.id.translate_from)
+    TextView detectLangView;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view =   super.onCreateView(inflater, container, savedInstanceState);
-        setSpan();
-        return view;
-    }
+    @BindColor(android.R.color.black)
+    int blackColor;
+
+
+    private static final String TR_KEY = "trKey";
+    private static final String LANG_KEY = "langKey";
+
 
     @Override
     protected int getIconId() {
@@ -105,43 +103,29 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     //langsList - list of languages
     //defaultLang - default language
     @Override
-    public void updateSpinner(boolean isFromSpinner, List<String> langsList, String defaultLang) {
+    public String updateSpinner(boolean isFromSpinner, List<Lang> langsList, String defaultLang) {
         Spinner spinner = (isFromSpinner) ? fromLangView : toLangView;
-        updateOneSpinner(spinner, langsList, defaultLang);
+        return updateOneSpinner(spinner, langsList, defaultLang);
     }
 
     //set adapter to spinner
-    public void updateOneSpinner(Spinner spinner, List<String> langs, String defaultStr) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, langs);
+    public String updateOneSpinner(Spinner spinner, List<Lang> langs, String defaultStr) {
+        List<String> langsNames  = new ArrayList<>();
+        for (Lang singleLang: langs){
+            langsNames.add(singleLang.getName());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, langsNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        try {
-            int spinnerPosition = adapter.getPosition(defaultStr);
-            spinner.setSelection(spinnerPosition);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        int spinnerPosition = adapter.getPosition(defaultStr);
+        if (spinnerPosition == -1) spinnerPosition = 0;
+        Log.d(TAG, "updateOneSpinner: " + spinnerPosition);
+        spinner.setSelection(spinnerPosition);
+        return langs.get(spinnerPosition).getDesc();
+
     }
-    //set spanned text with link needed in license
-    private void setSpan() {
-        Log.d(TAG, "setSpan: ");
-        String text = getString(R.string.license)+" "+getString(R.string.service_name);
-        Spannable spannableLicence = new SpannableString(text);
-        ClickableSpan clickableSpan = new ClickableSpan() {
-            @Override
-            public void onClick(View textView) {
-                String licenseUrl =  getString(R.string.license_url);
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(licenseUrl));
-                startActivity(browserIntent);
-            }
-        };
-        int posStart = text.indexOf(getString(R.string.service_name));
-        int posEnd = text.length();
-        spannableLicence.setSpan(new UnderlineSpan(), posStart, posEnd,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE );
-        spannableLicence.setSpan(clickableSpan, posStart, posEnd,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        licenseView.setText(spannableLicence);
-        licenseView.setMovementMethod(LinkMovementMethod.getInstance());
-    }
+
 
     //all events listeners
     private void initListeners() {
@@ -182,19 +166,19 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     private void clearText() {
         textToTranslateView.setText("");
         setFieldsVisibility(false);
+        detectLangView.setVisibility(View.GONE);
     }
 
     //set visibility of translation fields.
     //show = true - visible
     //show = false - gone
-    private void setFieldsVisibility(boolean show){
-
-        languageView.setVisibility(show?View.VISIBLE:View.GONE);
-        mainTranslationView.setVisibility(show?View.VISIBLE:View.GONE);
-        addToFavorite.setVisibility(show?View.VISIBLE:View.GONE);
-        licenseView.setVisibility(show?View.VISIBLE:View.GONE);
-        if(!show)
-        trContainer.removeAllViews();
+    private void setFieldsVisibility(boolean show) {
+        languageView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mainTranslationView.setVisibility(show ? View.VISIBLE : View.GONE);
+        addToFavorite.setVisibility(show ? View.VISIBLE : View.GONE);
+        licenseView.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (!show)
+            trContainer.removeAllViews();
     }
 
     @Override
@@ -207,6 +191,7 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     //we have a few minor translations, so using the recycler is unnecessarily
     @Override
     public void setTranslation(SingleTranslation translation, String langName) {
+        if (translation == null) return;
         List<TranslationText> trList = translation.getTranslationList();
         setFieldsVisibility(true);
         mainTranslationView.setText(translation.getMainTranslation());
@@ -217,11 +202,72 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
         LayoutInflater inflater = getLayoutInflater(null);
         for (int i = 1; i < trList.size(); i++) {
             RelativeLayout minorTranslate = (RelativeLayout) inflater.inflate(R.layout.it_minor_translation, trContainer, false);
-            TextView indexView = (TextView)minorTranslate.findViewById(R.id.index);
-            TextView translationView = (TextView)minorTranslate.findViewById(R.id.translation);
+            TextView indexView = (TextView) minorTranslate.findViewById(R.id.index);
+            TextView translationView = (TextView) minorTranslate.findViewById(R.id.translation);
             indexView.setText(String.valueOf(i));
             translationView.setText(trList.get(i).getText());
             trContainer.addView(minorTranslate);
+        }
+    }
+
+    //set spannable string "translate from" and click listener on it
+    @Override
+    public void setDetectedLang(String langName, String langDesc) {
+        detectLangView.setText(generateSpannableText(langName));
+        detectLangView.setVisibility(View.VISIBLE);
+        subs.add(RxView.clicks(detectLangView)
+                .subscribe((event) -> {
+                    presenter.detectLangClick(langDesc, textToTranslateView.getText().toString());
+                    detectLangView.setVisibility(View.GONE);
+                }));
+    }
+
+    //get spannable string "translate from"
+    private SpannableStringBuilder generateSpannableText(String langName) {
+        SpannableStringBuilder sBuilder = new SpannableStringBuilder();
+        String detectText = getString(R.string.detect_text);
+        sBuilder.append(detectText)
+                .append(" ")
+                .append(langName);
+
+        int beginSpan = detectText.length() + 1;
+        int endSpan = detectText.length() + langName.length() + 1;
+
+        sBuilder.setSpan(new AbsoluteSizeSpan(
+                        (int) getResources().getDimension(R.dimen.to_text_size)),
+                beginSpan,
+                endSpan,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        sBuilder.setSpan(new ForegroundColorSpan(blackColor),
+                beginSpan,
+                endSpan,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return sBuilder;
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState: ");
+        outState.putString(TR_KEY, presenter.getCurrentTranslation().getMainTranslation());
+        outState.putString(LANG_KEY, presenter.getCurrentLang());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        Log.d(TAG, "onViewStateRestored: ");
+        if (savedInstanceState != null) {
+            String lang = savedInstanceState.getString(LANG_KEY);
+            String translation = savedInstanceState.getString(TR_KEY);
+            if (lang != null) {
+                setFieldsVisibility(true);
+                mainTranslationView.setText(translation);
+                languageView.setText(lang);
+            }
         }
     }
 }

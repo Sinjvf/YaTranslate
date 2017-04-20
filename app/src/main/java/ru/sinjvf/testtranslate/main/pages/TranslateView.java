@@ -2,6 +2,7 @@ package ru.sinjvf.testtranslate.main.pages;
 
 import java.util.List;
 
+import ru.sinjvf.testtranslate.data.Lang;
 import ru.sinjvf.testtranslate.data.SingleTranslation;
 
 /**
@@ -9,7 +10,8 @@ import ru.sinjvf.testtranslate.data.SingleTranslation;
  */
 
 public interface TranslateView extends SuperPageView {
-    void updateSpinner(boolean isFromSpinner, List<String> langsList,  String defaultLang);
+    String updateSpinner(boolean isFromSpinner, List<Lang> langsList, String defaultLang);
     void setTranslation(SingleTranslation translation, String langName);
+    void setDetectedLang(String langName, String langDesc);
 
 }
