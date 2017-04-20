@@ -5,16 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxCompoundButton;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.data.SingleTranslation;
 
@@ -25,6 +22,8 @@ import ru.sinjvf.testtranslate.data.SingleTranslation;
  */
 
 public class HistoryFavoritesAdapter extends RecyclerView.Adapter<HistoryFavoritesAdapter.SimpleViewHolder> {
+
+    protected final String TAG = "My_Tag:"+getClass().getSimpleName();
     private List<SingleTranslation> list;
     private HistoryFavoritesPresenter presenter;
 
@@ -68,27 +67,28 @@ public class HistoryFavoritesAdapter extends RecyclerView.Adapter<HistoryFavorit
         TextView mainTranslationView;
         @BindView(R.id.lang_info)
         TextView langInfoView;
-        @BindView(R.id.trash)
-        ImageView trashView;
 
         public SimpleViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
+
+        @OnClick(R.id.trash)
+        public void onTrashClick(){
+            presenter.clickDelete(list.get(getAdapterPosition()), getAdapterPosition());
+        }
+
         public void bind(int pos) {
             try {
-                SingleTranslation translation = list.get(pos);
+                SingleTranslation translation = list.get(getAdapterPosition());
                 iconView.setChecked(translation.getIsFavorite());
                 mainWordView.setText(translation.getText());
                 mainTranslationView.setText(translation.getMainTranslation());
                 langInfoView.setText(translation.getLang());
+                iconView.setOnCheckedChangeListener((compoundButton, checked) ->
+                        presenter.clickFavorite(translation, checked, getAdapterPosition()));
 
-                RxCompoundButton.checkedChanges(iconView)
-                        .skip(1)
-                        .subscribe((aBoolean) -> presenter.clickFavorite(translation, aBoolean, pos));
-                RxView.clicks(trashView)
-                        .subscribe((event) -> presenter.clickDelete(translation, pos));
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }

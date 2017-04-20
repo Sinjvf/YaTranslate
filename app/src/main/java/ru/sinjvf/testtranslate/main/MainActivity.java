@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
-import com.jakewharton.rxbinding.support.v4.view.RxViewPager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +22,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.main.pages.SuperPageFragment;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Sinjvf on 17.04.2017.
@@ -42,8 +40,6 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     TabLayout tabLayout;
     @BindColor(android.R.color.black)
     int iconColor;
-    //for unsubscribe from events when finish
-    private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
 
     @Override
@@ -96,12 +92,24 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        compositeSubscription.add(RxViewPager.pageSelections(viewPager)
-                .skip(1)
-                .subscribe(position -> {
-                    presenter.setTitle(position);
-                    ((SuperPageFragment)pagerAdapter.getItem(position)).init();
-                }));
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.d(TAG, "change page");
+                presenter.setTitle(position);
+                ((SuperPageFragment) pagerAdapter.getItem(position)).init();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @NonNull
@@ -110,9 +118,4 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         return new MainPresenter();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        compositeSubscription.unsubscribe();
-    }
 }

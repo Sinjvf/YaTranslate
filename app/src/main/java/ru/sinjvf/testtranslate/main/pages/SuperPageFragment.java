@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.main.TranslateApplication;
-import rx.subscriptions.CompositeSubscription;
+
 
 /**
  * Created by Sinjvf on 17.04.2017.
@@ -39,7 +39,6 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
 
     protected final String TAG = "My_Tag:"+getClass().getSimpleName();
     protected Unbinder unbinder;
-    protected CompositeSubscription subs = new CompositeSubscription();
     private View rootView;
 
     @BindView(R.id.license)
@@ -84,12 +83,6 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
         init();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (subs != null)
-            subs.unsubscribe();
-    }
 
     @Override
     public void onDestroyView() {
@@ -127,8 +120,9 @@ public abstract class SuperPageFragment<V extends SuperPageView, P extends Super
     protected abstract int getTitleId();
     protected abstract int getLayoutId();
     public  void init(){
-        if (subs != null)
-            subs.unsubscribe();
-        subs = new CompositeSubscription();
     }
+
+    public void showProgress(boolean show){
+    }
+
 }

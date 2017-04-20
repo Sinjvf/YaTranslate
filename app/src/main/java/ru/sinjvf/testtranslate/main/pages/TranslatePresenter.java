@@ -1,9 +1,12 @@
 package ru.sinjvf.testtranslate.main.pages;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import ru.sinjvf.testtranslate.data.DaoSession;
 import ru.sinjvf.testtranslate.data.Lang;
 import ru.sinjvf.testtranslate.data.LangPair;
@@ -27,27 +30,19 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     private ServerHandler handler = new ServerHandler();
 
 
-    //get current "To" lang
-    public String getCurrentLang() {
-        return LangUtils.getNameByDesc(currentLangPair.getTo(), daoSession);
-    }
-
-    //get current translation
-    public SingleTranslation getCurrentTranslation() {
-        return currentTranslation;
-    }
-
     //mvp presenter's lifecycle method
     @Override
     public void attachView(TranslateView view) {
         super.attachView(view);
         daoSession = getView().getApp().getDaoSession();
         if (!LangUtils.isLangsExist(daoSession)) {
+            getView().showProgress(true);
             handler.getLang(currentLangPair.getFrom(), getLangs());
         } else {
             currentLangPair =setSpinners();
         }
     }
+
 
     //change the lang in spinner with "from" languages
     public void fromLangChanged(String newLang) {
@@ -63,20 +58,26 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
         Log.d(TAG, "toLangChanged: " + newLang);
         if (newLang == null) return;
         currentLangPair.setTo(LangUtils.getDescByName(newLang, daoSession));
-        Log.d(TAG, "toLangChanged: " + currentLangPair.getStr());
+
         if (!isViewAttached()) return;
     }
 
     //text in translation field invoke "done" action
     public void setNewText(String text) {
         Log.d(TAG, "setNewText: " + text);
+        getTranslation(text);
+        handler.detectLang(text, currentLangPair.getFrom(), detect());
+    }
+
+    //check if translation exist in db, if not - sent server request
+    private void getTranslation(String text){
         currentTranslation = TranslateUtils.getByText(text, currentLangPair.getStr(), daoSession);
         if (currentTranslation != null) {
             setTranslatedText();
         } else {
+            if (isViewAttached())getView().showProgress(true);
             handler.translate(text, currentLangPair.getStr(), translate(text));
         }
-        handler.detectLang(text, currentLangPair.getFrom(), detect());
     }
 
     //click the "add to favorite" star
@@ -103,13 +104,7 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
         Log.d(TAG, "detectLangClick: ");
         currentLangPair.setFrom(langDesc);
         currentLangPair = setSpinners();
-        currentTranslation = TranslateUtils.getByText(text, currentLangPair.getStr(), daoSession);
-        if (currentTranslation != null) {
-            setTranslatedText();
-        } else {
-            handler.translate(text, currentLangPair.getStr(), translate(text));
-        }
-
+        getTranslation(text);
     }
 
     //save the list of languages
@@ -162,7 +157,10 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
         if (!isViewAttached()) return;
         if (!response.getLang().equals(currentLangPair.getFrom())) {
             String langName = LangUtils.getNameByDesc(response.getLang(), daoSession);
-            getView().setDetectedLang(langName, response.getLang());
+            //not all languages supported in this api
+            if (!TextUtils.isEmpty(langName)) {
+                getView().setDetectedLang(langName, response.getLang());
+            }
         }
     }
 
@@ -192,12 +190,23 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     }
 
     //callback of detect request response
+    //nothing show when error occur
     public ServerCallback<TranslateResponse> detect() {
         return new ServerCallback<TranslateResponse>(getView()) {
             @Override
             public void onSuccess(TranslateResponse response) {
                 Log.d(TAG, "onSuccess: ");
                 setDetectedLangs(response);
+            }
+
+            @Override
+            public void onError(ResponseBody response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<TranslateResponse> call, Throwable t) {
+
             }
         };
     }

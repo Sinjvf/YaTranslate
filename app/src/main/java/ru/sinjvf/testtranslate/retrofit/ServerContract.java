@@ -23,8 +23,8 @@ import ru.sinjvf.testtranslate.retrofit.responses.TranslateResponse;
  */
 
 public class ServerContract {
-    private static final String HOST_NAME = "translate.yandex.net";
-    private static final String BASE_URL = "https://" + HOST_NAME + "/api/v1.5/tr.json/";
+    private static final String TRANSLATE_HOST_NAME = "translate.yandex.net";
+    private static final String TRANSLATE_BASE_URL = "https://" + TRANSLATE_HOST_NAME + "/api/v1.5/tr.json/";
 
     private static final String TRANSLATE = "translate";
     private static final String GET_LANGS = "getLangs";
@@ -39,7 +39,7 @@ public class ServerContract {
     public static final String KEY_TRANSLATE = "trnsl.1.1.20170417T073908Z.04b66ff6448be705.7f8f88b33b21f34a73e395378213d69d59f8a4da";
     public static final String KEY_DICTIONARY = "dict.1.1.20170420T082837Z.1b56b16e88d82c32.908a337fda5684a353a4082ca581357c181b4059";
 
-    public interface ProfileAPI {
+    public interface TranslateAPI {
         @POST(TRANSLATE)
         Call<TranslateResponse> translate(@QueryMap Map<String, String> params);
 
@@ -52,16 +52,13 @@ public class ServerContract {
 
     private static class ServiceGenerator {
 
-        private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        private static <S> S createService(String baseUrl, Class<S> serviceClass) {
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
-        private static Retrofit.Builder builder =
-                new Retrofit.Builder()
-                        .addConverterFactory(GsonConverterFactory.create(new Gson()))
-                        .baseUrl(ServerContract.BASE_URL);
-
-
-        private static <S> S createService(Class<S> serviceClass) {
-
+            Retrofit.Builder builder =
+                    new Retrofit.Builder()
+                            .addConverterFactory(GsonConverterFactory.create(new Gson()))
+                            .baseUrl(baseUrl);
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Interceptor.Chain chain) throws IOException {
@@ -81,17 +78,14 @@ public class ServerContract {
             // logging
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClient.addInterceptor(logging);
-
             OkHttpClient client = httpClient.build();
             Retrofit retrofit;
-
             retrofit = builder.client(client).build();
-
             return retrofit.create(serviceClass);
         }
     }
 
-    public static ServerContract.ProfileAPI getService() {
-        return ServerContract.ServiceGenerator.createService(ServerContract.ProfileAPI.class);
+    public static TranslateAPI getTranslateService() {
+        return ServerContract.ServiceGenerator.createService(TRANSLATE_BASE_URL, TranslateAPI.class);
     }
 }

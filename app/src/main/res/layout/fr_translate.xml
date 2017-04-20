@@ -10,34 +10,39 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <LinearLayout
-        android:padding="@dimen/text_margin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:id="@+id/select_language">
-        <Spinner
-            android:layout_width="@dimen/lang_width"
-            android:layout_height="wrap_content"
-            android:id="@+id/from_language">
-        </Spinner>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_double_arrow"
-            android:id="@+id/swap_langs"/>
-        <Spinner
-            android:layout_width="@dimen/lang_width"
-            android:layout_height="wrap_content"
-            android:id="@+id/to_language">
-        </Spinner>
-    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/select_bar_height"
+        app:srcCompat="@drawable/ic_double_arrow"
+        android:id="@+id/swap_langs"
+        android:layout_centerHorizontal="true"/>
+    <Spinner
+        android:padding="@dimen/small_margin"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/select_bar_height"
+        android:id="@+id/from_language"
+        android:layout_toLeftOf="@id/swap_langs"
+        android:layout_toStartOf="@id/swap_langs"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true">
+    </Spinner>
+
+    <Spinner
+        android:layout_width="@dimen/lang_width"
+        android:layout_height="@dimen/select_bar_height"
+        android:id="@+id/to_language"
+        android:layout_toRightOf="@id/swap_langs"
+        android:layout_toEndOf="@id/swap_langs"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:padding="@dimen/small_margin">
+    </Spinner>
 
     <EditText
 
         android:background="@drawable/sh_rectangle"
-        android:layout_below="@id/select_language"
+        android:layout_below="@id/from_language"
         android:layout_width="match_parent"
         android:layout_height="@dimen/translate_field_height"
         android:padding="@dimen/text_margin"
@@ -46,17 +51,25 @@
         android:id="@+id/text_to_translate"
         android:imeOptions="actionDone"
         android:inputType="text"/>
+   <ImageView
+       android:layout_width="@dimen/img_size"
+       android:layout_height="@dimen/img_size"
+       android:layout_margin="@dimen/small_margin"
+       android:layout_alignBottom="@id/text_to_translate"
+       android:layout_alignStart="@id/text_to_translate"
+       android:layout_alignLeft="@id/text_to_translate"
+       app:srcCompat="@drawable/ic_close"
+       android:tint="@color/greyDivider"
+       android:id="@+id/clear_text" />
+   <ProgressBar
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/progress"
+       android:layout_centerInParent="true"
+       android:visibility="gone"
+       tools:visibility="visible"/>
 
-    <ImageView
-        android:layout_width="@dimen/img_size"
-        android:layout_height="@dimen/img_size"
-        android:layout_margin="@dimen/small_margin"
-        android:layout_alignBottom="@id/text_to_translate"
-        android:layout_alignStart="@id/text_to_translate"
-        android:layout_alignLeft="@id/text_to_translate"
-        app:srcCompat="@drawable/ic_close"
-        android:tint="@color/greyDivider"
-        android:id="@+id/clear_text" />
+
     <TextView
         android:padding="@dimen/small_margin"
         android:layout_width="wrap_content"

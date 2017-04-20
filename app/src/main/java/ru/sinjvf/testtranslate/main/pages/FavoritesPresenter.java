@@ -29,7 +29,9 @@ public class FavoritesPresenter extends HistoryFavoritesPresenter {
         super.clickFavorite(translation, ischecked, position);
         //translations now not favorite remove from list
         if (!isViewAttached())return;
-        getView().deleteItem(position);
+        if(!ischecked) {
+            getView().deleteItem(position);
+        }
     }
 
 

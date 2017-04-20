@@ -17,15 +17,15 @@ import ru.sinjvf.testtranslate.retrofit.responses.GetLangsResponse;
  */
 
 public class LangUtils {
-    public static boolean isLangsExist(DaoSession daoSession){
-        LangDao langDao =  daoSession.getLangDao();
+    public static boolean isLangsExist(DaoSession daoSession) {
+        LangDao langDao = daoSession.getLangDao();
         List<Lang> langs = langDao.queryBuilder()
                 .list();
-        return  (langs!=null && langs.size()!=0);
+        return (langs != null && langs.size() != 0);
     }
 
-    public static List<Lang> getFromList(DaoSession daoSession){
-        LangDao langDao =  daoSession.getLangDao();
+    public static List<Lang> getFromList(DaoSession daoSession) {
+        LangDao langDao = daoSession.getLangDao();
         List<Lang> queryListAll = langDao.queryBuilder()
                 .list();
         List<Lang> list = new ArrayList<>();
@@ -37,11 +37,12 @@ public class LangUtils {
         return list;
     }
 
-    public static List<Lang> getToList(String descFrom,DaoSession daoSession){
-        LangDao langDao =  daoSession.getLangDao();
+    public static List<Lang> getToList(String descFrom, DaoSession daoSession) {
+        LangDao langDao = daoSession.getLangDao();
         List<Lang> queryListAll = langDao.queryBuilder()
                 .where(LangDao.Properties.Desc.eq(descFrom))
                 .list();
+        if (queryListAll == null || queryListAll.size() == 0) return new ArrayList<>();
         List<Lang> list = queryListAll.get(0).getLangList();
      /*   for (Lang singleLang : queryListAll.get(0).getLangList()) {
             if (singleLang.getLangList() != null && singleLang.getLangList().size() != 0) {
@@ -53,7 +54,7 @@ public class LangUtils {
 
     public static void saveLangs(GetLangsResponse response, DaoSession daoSession) {
         LangDao langDao = daoSession.getLangDao();
-        JoinLangsDao joinLangsDao= daoSession.getJoinLangsDao();
+        JoinLangsDao joinLangsDao = daoSession.getJoinLangsDao();
         LangPair langPair;
         long fromId;
         long toId;
@@ -70,8 +71,8 @@ public class LangUtils {
         }
     }
 
-    public static String getDescByName(String name,DaoSession daoSession){
-        LangDao langDao =  daoSession.getLangDao();
+    public static String getDescByName(String name, DaoSession daoSession) {
+        LangDao langDao = daoSession.getLangDao();
         List<Lang> nameList = langDao.queryBuilder()
                 .where(LangDao.Properties.Name.eq(name))
                 .list();
@@ -84,8 +85,8 @@ public class LangUtils {
     }
 
 
-    public static String getNameByDesc(String desc, DaoSession daoSession){
-        LangDao langDao =  daoSession.getLangDao();
+    public static String getNameByDesc(String desc, DaoSession daoSession) {
+        LangDao langDao = daoSession.getLangDao();
         List<Lang> nameList = langDao.queryBuilder()
                 .where(LangDao.Properties.Desc.eq(desc))
                 .list();
@@ -100,7 +101,7 @@ public class LangUtils {
 
     //return id
     public static Long insertOrIgnoreLang(String desc, Map<String, String> descMap, DaoSession daoSession) {
-        LangDao langDao =  daoSession.getLangDao();
+        LangDao langDao = daoSession.getLangDao();
         Lang lang = new Lang();
         lang.setDesc(desc);
         lang.setName(descMap.get(desc));

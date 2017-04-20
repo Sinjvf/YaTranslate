@@ -1,29 +1,22 @@
 package ru.sinjvf.testtranslate.main.pages;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxAdapterView;
-import com.jakewharton.rxbinding.widget.RxCompoundButton;
-import com.jakewharton.rxbinding.widget.RxTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +26,6 @@ import butterknife.BindView;
 import ru.sinjvf.testtranslate.R;
 import ru.sinjvf.testtranslate.data.Lang;
 import ru.sinjvf.testtranslate.data.SingleTranslation;
-import ru.sinjvf.testtranslate.data.TranslationText;
 
 
 /**
@@ -63,6 +55,8 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     LinearLayout trContainer;
     @BindView(R.id.translate_from)
     TextView detectLangView;
+    @BindView(R.id.progress)
+    ProgressBar progress;
 
     @BindColor(android.R.color.black)
     int blackColor;
@@ -110,8 +104,8 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
 
     //set adapter to spinner
     public String updateOneSpinner(Spinner spinner, List<Lang> langs, String defaultStr) {
-        List<String> langsNames  = new ArrayList<>();
-        for (Lang singleLang: langs){
+        List<String> langsNames = new ArrayList<>();
+        for (Lang singleLang : langs) {
             langsNames.add(singleLang.getName());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, langsNames);
@@ -120,7 +114,6 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
 
         int spinnerPosition = adapter.getPosition(defaultStr);
         if (spinnerPosition == -1) spinnerPosition = 0;
-        Log.d(TAG, "updateOneSpinner: " + spinnerPosition);
         spinner.setSelection(spinnerPosition);
         return langs.get(spinnerPosition).getDesc();
 
@@ -131,27 +124,46 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     private void initListeners() {
 
         //listeners of events in spinners
-        subs.add(RxAdapterView.itemSelections(fromLangView)
-                .skip(1)
-                .subscribe((event) -> presenter.fromLangChanged((String) fromLangView.getSelectedItem())));
-        subs.add(RxAdapterView.itemSelections(toLangView)
-                .skip(1)
-                .subscribe((event) -> presenter.toLangChanged((String) toLangView.getSelectedItem())));
+
+        fromLangView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                presenter.fromLangChanged((String) fromLangView.getSelectedItem());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        toLangView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                presenter.toLangChanged((String) toLangView.getSelectedItem());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
         //click "done" in text for translation
-        subs.add(RxTextView.editorActions(textToTranslateView)
-                .subscribe((event) -> {
-                    presenter.setNewText(textToTranslateView.getText().toString());
-                    hideKeyboard();
-                }));
+        textToTranslateView.setOnEditorActionListener((textView, i, keyEvent) -> {
+            presenter.setNewText(textToTranslateView.getText().toString());
+            hideKeyboard();
+            return true;
+        });
+
         //click "clearText" button
-        subs.add(RxView.clicks(clearTextView)
-                .subscribe((event) -> clearText()));
+        clearTextView.setOnClickListener(view -> clearText());
+
+
         //click "favorite" star image
-        subs.add(RxCompoundButton.checkedChanges(addToFavorite)
-                .subscribe((aBoolean) -> presenter.favoriteClick(aBoolean)));
+        addToFavorite.setOnCheckedChangeListener((compoundButton, aBoolean) -> presenter.favoriteClick(aBoolean));
+
         //click "swap"
-        subs.add(RxView.clicks(swapLangView)
-                .subscribe((event) -> presenter.swapClick()));
+        swapLangView.setOnClickListener(view -> presenter.swapClick());
+
     }
 
     private void hideKeyboard() {
@@ -192,22 +204,10 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     @Override
     public void setTranslation(SingleTranslation translation, String langName) {
         if (translation == null) return;
-        List<TranslationText> trList = translation.getTranslationList();
         setFieldsVisibility(true);
         mainTranslationView.setText(translation.getMainTranslation());
         languageView.setText(langName);
-        //set minor translations
-        trContainer.removeAllViews();
-        if (trList == null || trList.size() == 0) return;
-        LayoutInflater inflater = getLayoutInflater(null);
-        for (int i = 1; i < trList.size(); i++) {
-            RelativeLayout minorTranslate = (RelativeLayout) inflater.inflate(R.layout.it_minor_translation, trContainer, false);
-            TextView indexView = (TextView) minorTranslate.findViewById(R.id.index);
-            TextView translationView = (TextView) minorTranslate.findViewById(R.id.translation);
-            indexView.setText(String.valueOf(i));
-            translationView.setText(trList.get(i).getText());
-            trContainer.addView(minorTranslate);
-        }
+
     }
 
     //set spannable string "translate from" and click listener on it
@@ -215,11 +215,10 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     public void setDetectedLang(String langName, String langDesc) {
         detectLangView.setText(generateSpannableText(langName));
         detectLangView.setVisibility(View.VISIBLE);
-        subs.add(RxView.clicks(detectLangView)
-                .subscribe((event) -> {
-                    presenter.detectLangClick(langDesc, textToTranslateView.getText().toString());
-                    detectLangView.setVisibility(View.GONE);
-                }));
+        detectLangView.setOnClickListener((event)->{
+            presenter.detectLangClick(langDesc, textToTranslateView.getText().toString());
+            detectLangView.setVisibility(View.GONE);
+        });
     }
 
     //get spannable string "translate from"
@@ -248,26 +247,8 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     }
 
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState: ");
-        outState.putString(TR_KEY, presenter.getCurrentTranslation().getMainTranslation());
-        outState.putString(LANG_KEY, presenter.getCurrentLang());
+    public void showProgress(boolean show) {
+        progress.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        Log.d(TAG, "onViewStateRestored: ");
-        if (savedInstanceState != null) {
-            String lang = savedInstanceState.getString(LANG_KEY);
-            String translation = savedInstanceState.getString(TR_KEY);
-            if (lang != null) {
-                setFieldsVisibility(true);
-                mainTranslationView.setText(translation);
-                languageView.setText(lang);
-            }
-        }
-    }
 }

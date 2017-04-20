@@ -17,11 +17,12 @@ import ru.sinjvf.testtranslate.retrofit.responses.TranslateResponse;
 public class ServerHandler {
 
     protected final String TAG = "My_Tag:"+getClass().getSimpleName();
-    private ServerContract.ProfileAPI service;
+    private ServerContract.TranslateAPI service;
 
     public ServerHandler() {
-        service = ServerContract.getService();
+        service = ServerContract.getTranslateService();
     }
+
 
 
     public interface Invocation<R extends SuperResponse> {

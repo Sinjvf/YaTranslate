@@ -8,6 +8,7 @@
     <dimen name="lang_info_width">60dp</dimen>
     <dimen name="lang_width">150dp</dimen>
 
+    <dimen name="select_bar_height">40dp</dimen>
     <dimen name="from_text_size">20sp</dimen>
     <dimen name="to_text_size">15sp</dimen>
     <dimen name="hint_text_size">10sp</dimen>

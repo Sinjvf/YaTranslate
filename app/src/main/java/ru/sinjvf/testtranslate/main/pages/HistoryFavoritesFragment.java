@@ -5,8 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.View;
 
-import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
-
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,8 +28,20 @@ abstract public class HistoryFavoritesFragment<P extends HistoryFavoritesPresent
     @Override
     public void init() {
         super.init();
-        subs.add(RxSearchView.queryTextChanges(searchView)
-                .subscribe((sequence)->presenter.searchChange(sequence.toString())));
+
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                presenter.searchChange(newText);
+                return false;
+            }
+        });
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         adapter = new HistoryFavoritesAdapter(presenter);

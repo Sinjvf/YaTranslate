@@ -61,6 +61,7 @@ public class ServerCallback<R extends SuperResponse> implements Callback<R> {
 
     @Override
     public void onResponse(Call<R> call, Response<R> response) {
+        if (view!=null) view.showProgress(false);
         if (response.isSuccessful()) {
             onSuccess(response.body());
         } else {
@@ -72,6 +73,7 @@ public class ServerCallback<R extends SuperResponse> implements Callback<R> {
     @Override
     public void onFailure(Call<R> call, Throwable t) {
         if (view == null) return;
+        view.showProgress(false);
         view.showSnack(ru.sinjvf.testtranslate.R.string.err_unfortunate);
     }
 }

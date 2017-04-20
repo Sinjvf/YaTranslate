@@ -18,4 +18,5 @@ public interface SuperPageView extends MvpView {
     Resources getResources();
     TranslateApplication getApp();
     void showSnack(int strId);
+    void showProgress(boolean show);
 }
