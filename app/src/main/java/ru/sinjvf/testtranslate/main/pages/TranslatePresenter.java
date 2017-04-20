@@ -102,13 +102,14 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     }
 
     private void saveTranslation(String text, TranslateResponse response){
-        Log.d(TAG, "setTranslatedText: ");
+        Log.d(TAG, "saveTranslation: ");
         long id = TranslateUtils.insert(response, text, daoSession);
         currentTranslation = TranslateUtils.getById(id, daoSession);
         setTranslatedText();
     }
 
     private void setTranslatedText(){
+        Log.d(TAG, "setTranslatedText: ");
         if (!isViewAttached())return;
         String langName = LangUtils.getNameByDesc(currentLangPair.getTo(), daoSession);
         getView().setTranslation(currentTranslation, langName);

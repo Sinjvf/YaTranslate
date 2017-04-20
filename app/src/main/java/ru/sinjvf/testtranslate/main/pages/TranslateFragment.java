@@ -209,12 +209,12 @@ public class TranslateFragment extends SuperPageFragment<TranslateView, Translat
     public void setTranslation(SingleTranslation translation, String langName) {
         List<TranslationText> trList = translation.getTranslationList();
         setFieldsVisibility(true);
-        if (trList == null || trList.size() == 0) return;
-        mainTranslationView.setText(trList.get(0).getText());
+        mainTranslationView.setText(translation.getMainTranslation());
         languageView.setText(langName);
-        trContainer.removeAllViews();
-        LayoutInflater inflater = getLayoutInflater(null);
         //set minor translations
+        trContainer.removeAllViews();
+        if (trList == null || trList.size() == 0) return;
+        LayoutInflater inflater = getLayoutInflater(null);
         for (int i = 1; i < trList.size(); i++) {
             RelativeLayout minorTranslate = (RelativeLayout) inflater.inflate(R.layout.it_minor_translation, trContainer, false);
             TextView indexView = (TextView)minorTranslate.findViewById(R.id.index);

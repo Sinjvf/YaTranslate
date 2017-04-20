@@ -79,6 +79,7 @@ public class HistoryFavoritesAdapter extends RecyclerView.Adapter<HistoryFavorit
         public void bind(int pos) {
             try {
                 SingleTranslation translation = list.get(pos);
+                iconView.setChecked(translation.getIsFavorite());
                 mainWordView.setText(translation.getText());
                 mainTranslationView.setText(translation.getMainTranslation());
                 langInfoView.setText(translation.getLang());
