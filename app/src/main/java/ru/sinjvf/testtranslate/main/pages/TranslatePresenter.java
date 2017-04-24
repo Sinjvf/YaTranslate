@@ -30,6 +30,10 @@ public class TranslatePresenter extends SuperPagePresenter<TranslateView> {
     private ServerHandler handler = new ServerHandler();
 
 
+    public LangPair getCurrentLangPair() {
+        return currentLangPair;
+    }
+
     //mvp presenter's lifecycle method
     @Override
     public void attachView(TranslateView view) {
